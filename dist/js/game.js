@@ -45,8 +45,8 @@ var Bird = function(game, x, y, frame) {
 
   this.events.onKilled.add(this.onKilled, this);
 
-  
-  
+
+
 };
 
 Bird.prototype = Object.create(Phaser.Sprite.prototype);
@@ -57,7 +57,7 @@ Bird.prototype.update = function() {
   // if it is rotate the bird towards the ground by 2.5 degrees
   if(this.angle < 90 && this.alive) {
     this.angle += 2.5;
-  } 
+  }
 
   if(!this.alive) {
     this.body.velocity.x = 0;
@@ -68,13 +68,13 @@ Bird.prototype.flap = function() {
   if(!!this.alive) {
     this.flapSound.play();
     //cause our bird to "jump" upward
-    this.body.velocity.y = -400;
+                                  this.body.velocity.y = -100;
     // rotate the bird to -40 degrees
     this.game.add.tween(this).to({angle: -40}, 100).start();
   }
 };
 
-Bird.prototype.revived = function() { 
+Bird.prototype.revived = function() {
 };
 
 Bird.prototype.onKilled = function() {
@@ -325,35 +325,35 @@ Menu.prototype = {
   create: function() {
     // add the background sprite
     this.background = this.game.add.sprite(0,0,'background');
-    
+
     // add the ground sprite as a tile
     // and start scrolling in the negative x direction
     this.ground = this.game.add.tileSprite(0,400, 335,112,'ground');
     this.ground.autoScroll(-200,0);
 
     /** STEP 1 **/
-    // create a group to put the title assets in 
+    // create a group to put the title assets in
     // so they can be manipulated as a whole
     this.titleGroup = this.game.add.group()
-      
+
     /** STEP 2 **/
     // create the title sprite
     // and add it to the group
     this.title = this.add.sprite(0,0,'title');
     this.titleGroup.add(this.title);
-    
+
     /** STEP 3 **/
-    // create the bird sprite 
+    // create the bird sprite
     // and add it to the title group
     this.bird = this.add.sprite(200,5,'bird');
     this.titleGroup.add(this.bird);
-    
+
     /** STEP 4 **/
     // add an animation to the bird
     // and begin the animation
     this.bird.animations.add('flap');
     this.bird.animations.play('flap', 12, true);
-    
+
     /** STEP 5 **/
     // Set the originating location of the group
     this.titleGroup.x = 30;
@@ -394,40 +394,35 @@ Play.prototype = {
 
 
     // give our world an initial gravity of 1200
-    this.game.physics.arcade.gravity.y = 1200;
+    this.game.physics.arcade.gravity.y = 600;
 
     // add the background sprite
     this.background = this.game.add.sprite(0,0,'background');
 
     // create and add a group to hold our pipeGroup prefabs
     this.pipes = this.game.add.group();
-    
+
     // create and add a new Bird object
     this.bird = new Bird(this.game, 100, this.game.height/2);
     this.game.add.existing(this.bird);
-    
-    
+
+
 
     // create and add a new Ground object
     this.ground = new Ground(this.game, 0, 400, 335, 112);
     this.game.add.existing(this.ground);
-    
+
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.flapKey.onDown.addOnce(this.startGame, this);
-    this.flapKey.onDown.add(this.bird.flap, this.bird);
-    
-
-    // add mouse/touch controls
-    this.game.input.onDown.addOnce(this.startGame, this);
-    this.game.input.onDown.add(this.bird.flap, this.bird);
-    
+    this.flapKey.onHoldCallback = this.bird.flap;
+    this.flapKey.onHoldContext = this.bird;
 
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 
-    
+
 
     this.score = 0;
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
@@ -445,13 +440,13 @@ Play.prototype = {
     this.pipeHitSound = this.game.add.audio('pipeHit');
     this.groundHitSound = this.game.add.audio('groundHit');
     this.scoreSound = this.game.add.audio('score');
-    
+
   },
   update: function() {
     // enable collisions between the bird and the ground
     this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
 
-    if(!this.gameover) {    
+    if(!this.gameover) {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
@@ -460,7 +455,7 @@ Play.prototype = {
     }
 
 
-    
+
   },
   shutdown: function() {
     this.game.input.keyboard.removeKey(Phaser.Keyboard.SPACEBAR);
@@ -505,16 +500,16 @@ Play.prototype = {
         this.pipeGenerator.timer.stop();
         this.ground.stopScroll();
     }
-    
+
   },
   generatePipes: function() {
     var pipeY = this.game.rnd.integerInRange(-100, 100);
     var pipeGroup = this.pipes.getFirstExists(false);
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);  
+        pipeGroup = new PipeGroup(this.game, this.pipes);
     }
     pipeGroup.reset(this.game.width, pipeY);
-    
+
 
   }
 };
