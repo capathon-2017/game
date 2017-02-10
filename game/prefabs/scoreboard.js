@@ -1,19 +1,19 @@
 'use strict';
 
 var Scoreboard = function(game) {
-  
+
   var gameover;
-  
+
   Phaser.Group.call(this, game);
 
   this.questions = this.game.cache._json.questions.data;
 
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
-  
+
   this.y = this.game.height;
   this.x = 0;
-  
+
 };
 
 Scoreboard.prototype = Object.create(Phaser.Group.prototype);
