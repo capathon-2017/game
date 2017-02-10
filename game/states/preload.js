@@ -24,6 +24,7 @@ Preload.prototype = {
     this.load.image('getReady', 'assets/get-ready.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
+    this.load.image('answer', 'assets/answer.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');

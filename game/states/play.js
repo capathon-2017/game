@@ -40,7 +40,9 @@ Play.prototype = {
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 
-    this.score = 0;
+    if(this.score === undefined) {
+        this.score = 0;
+    }
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
 
     this.instructionGroup = this.game.add.group();
@@ -98,15 +100,11 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    // if(enemy instanceof Ground && !this.bird.onGround) {
-        this.groundHitSound.play();
-        this.scoreboard = new Scoreboard(this.game);
-        this.game.add.existing(this.scoreboard);
-        this.scoreboard.show(this.score);
-        this.bird.onGround = true;
-    // } else if (enemy instanceof Pipe){
-    //     this.pipeHitSound.play();
-    // }
+    this.game.physics.arcade.gravity.y = 0;
+    this.groundHitSound.play();
+    this.scoreboard = new Scoreboard(this.game, this);
+    this.game.add.existing(this.scoreboard);
+    this.scoreboard.show(this.score);
 
     if(!this.gameover) {
         this.gameover = true;
@@ -147,6 +145,10 @@ Play.prototype = {
     var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
     // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
     return maxVar;
+  },
+  resetGame: function () {
+    this.create();
+    this.startGame();
   }
 };
 

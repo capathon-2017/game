@@ -54,7 +54,7 @@ Bird.prototype.revived = function() {
 Bird.prototype.onKilled = function() {
   this.exists = true;
   this.visible = true;
-  this.animations.stop();
+  //this.animations.stop();
 };
 
 module.exports = Bird;

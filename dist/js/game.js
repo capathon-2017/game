@@ -76,7 +76,7 @@ Bird.prototype.revived = function() {
 Bird.prototype.onKilled = function() {
   this.exists = true;
   this.visible = true;
-  this.animations.stop();
+  //this.animations.stop();
 };
 
 module.exports = Bird;
@@ -184,11 +184,14 @@ module.exports = PipeGroup;
 },{"./pipe":4}],6:[function(require,module,exports){
 'use strict';
 
-var Scoreboard = function(game) {
+var Scoreboard = function(game, mainHandler) {
 
   var gameover;
 
   Phaser.Group.call(this, game);
+
+  this.game = game;
+  this.mainHandler = mainHandler;
 
   this.questions = this.game.cache._json.questions.data;
 
@@ -197,7 +200,6 @@ var Scoreboard = function(game) {
 
   this.y = this.game.height;
   this.x = 0;
-
 };
 
 Scoreboard.prototype = Object.create(Phaser.Group.prototype);
@@ -205,23 +207,23 @@ Scoreboard.prototype.constructor = Scoreboard;
 
 Scoreboard.prototype.show = function(score) {
 
-    var style = { font: "20px Arial", fill: "#000000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
+    this.style = { font: "20px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
 
-    var topMargin = this.scoreboard.height - 70;
-    var leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 20;
+    this.topMargin = this.scoreboard.height - 70;
+    this.leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 10;
 
     var question = this.questions.question;
 
-    this.questionText = this.game.add.text(leftMargin, (this.game.height / 2.4) - topMargin, question.text, style);
+    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.4) - this.topMargin, question.text, this.style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
         var offset = 2.1 - (i * 0.20);
-        this.answers[i] = this.game.add.text(leftMargin, (this.game.height / offset) - topMargin, question.options[i], style);
+        this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
         this.answers[i].inputEnabled = true;
-        this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question});
+        this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});
         this.answers[i].events.onInputOver.add(this.makeTextBold, this);
         this.answers[i].events.onInputOut.add(this.makeTextNormal, this);
         this.add(this.answers[i]);
@@ -230,18 +232,39 @@ Scoreboard.prototype.show = function(score) {
     this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 };
 Scoreboard.prototype.answerClicked = function () {
+    this.context.questionText.visible = false;
+
+    for(var j = 0; j < this.context.answers.length; j++) {
+        this.context.answers[j].visible = false;
+        this.context.answers[j].inputEnabled = false;
+    }
+
+    var result;
     for(var i = 0; i < this.question.options.length; i++) {
-        if(this.answer === this.question.options[i]) {
+        if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                //correct answer;
-                console.log("Yes, thats correct");
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Yes, thats correct", this.style);
+                result = true;
             }
-            else {
-                console.log("ahhh you had the wrong answer");
-                //incorrect answer
+            else { 
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                result = false;
             }
         }
     }
+
+    var buttonTopMargin = 280;
+    var leftMargin = this.context.leftMargin + 150;
+
+    if(result) {
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
+    }
+    else {
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+    }
+
 };
 Scoreboard.prototype.makeTextBold = function (item) {
    item.fontWeight = "bold";
@@ -253,11 +276,11 @@ Scoreboard.prototype.makeTextNormal = function (item) {
    item.fontSize = 20;
    item.font = "Arial";
 };
-Scoreboard.prototype.startClick = function() {
-  this.game.state.start('play');
+Scoreboard.prototype.resumeGame = function() {
+    this.context.mainHandler.resetGame();
 };
-Scoreboard.prototype.update = function() {
-  // write your prefab's specific update code here
+Scoreboard.prototype.exitGame = function() {
+    //show highscore
 };
 
 module.exports = Scoreboard;
@@ -387,7 +410,9 @@ Play.prototype = {
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 
-    this.score = 0;
+    if(this.score === undefined) {
+        this.score = 0;
+    }
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
 
     this.instructionGroup = this.game.add.group();
@@ -408,7 +433,7 @@ Play.prototype = {
 
   },
   update: function() {
-    // enable collisions between the bird and the ground
+    // not enable collisions between the bird and the ground
     // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
 
     if(!this.gameover) {
@@ -445,16 +470,11 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    console.log('Deathhandler called');
-    // if(enemy instanceof Ground && !this.bird.onGround) {
-        this.groundHitSound.play();
-        this.scoreboard = new Scoreboard(this.game);
-        this.game.add.existing(this.scoreboard);
-        this.scoreboard.show(this.score);
-        this.bird.onGround = true;
-    // } else if (enemy instanceof Pipe){
-    //     this.pipeHitSound.play();
-    // }
+    this.game.physics.arcade.gravity.y = 0;
+    this.groundHitSound.play();
+    this.scoreboard = new Scoreboard(this.game, this);
+    this.game.add.existing(this.scoreboard);
+    this.scoreboard.show(this.score);
 
     if(!this.gameover) {
         this.gameover = true;
@@ -467,6 +487,8 @@ Play.prototype = {
   },
   generatePipes: function() {
 
+    var testScore = this.score;
+    var maxVar = this.calculateMaxVar(testScore);
     var varTop = this.game.rnd.integerInRange(-10, 10);
     // var varBot = this.game.rnd.integerInRange(-1, 1);
     var pipeY = this.previousCenter + varTop;
@@ -487,6 +509,16 @@ Play.prototype = {
     pipeGroup.reset(this.game.width, pipeY);
 */    
 
+  },
+
+  calculateMaxVar: function(current_score){
+    var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
+    // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+    return maxVar;
+  },
+  resetGame: function () {
+    this.create();
+    this.startGame();
   }
 };
 
@@ -519,6 +551,7 @@ Preload.prototype = {
     this.load.image('getReady', 'assets/get-ready.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
+    this.load.image('answer', 'assets/answer.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');
