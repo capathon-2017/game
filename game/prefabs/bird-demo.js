@@ -6,7 +6,7 @@ var BirdDemo = function(game, x, y, frame) {
   this.animations.add('flap');
   this.animations.add('quickflap',[0,1,2,1,0,1,2,1,0]);
   this.animations.play('flap', 12, true);
-  
+
 
   // enable physics on the bird
   // and disable gravity on the bird
@@ -21,7 +21,7 @@ var BirdDemo = function(game, x, y, frame) {
 
   // add a listener for the 'onRevived' event
   this.events.onRevived.add(this.revived, this)
-  
+
 };
 
 BirdDemo.prototype = Object.create(Phaser.Sprite.prototype);
@@ -42,7 +42,7 @@ BirdDemo.prototype.flap = function() {
   // rotate the bird to -40 degrees
   game.add.tween(this).to({angle: -40}, 100).start();
   // play the flap animation
-  this.animations.play('quickflap', 24, false);
+  this.animations.play('quickflap', 28, false);
 };
 
 BirdDemo.prototype.revived = function() {
