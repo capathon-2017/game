@@ -28,8 +28,8 @@ Play.prototype = {
     this.game.add.existing(this.bird);
 
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 488, 1000, 112);
-    this.game.add.existing(this.ground);
+    //this.ground = new Ground(this.game, 0, 488, 1000, 112);
+    //this.game.add.existing(this.ground);
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -47,7 +47,7 @@ Play.prototype = {
 
     this.instructionGroup = this.game.add.group();
     this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 100,'getReady'));
-    this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
+    //this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
     this.instructionGroup.setAll('anchor.x', 0.5);
     this.instructionGroup.setAll('anchor.y', 0.5);
 
