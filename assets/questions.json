@@ -1,0 +1,12 @@
+{
+    "question": {
+        "difficulty": "easy",
+        "text": "What is an Object in Java?",
+        "options": [
+            "Everything is an Object",
+            "Nothing is an Object",
+            "Everything and Nothing is an Object"
+        ],
+        "correct": 1
+    }
+}

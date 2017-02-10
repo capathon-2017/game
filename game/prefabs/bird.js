@@ -12,7 +12,6 @@ var Bird = function(game, x, y, frame) {
   this.alive = false;
   this.onGround = false;
 
-
   // enable physics on the bird
   // and disable gravity on the bird
   // until the game is started
@@ -22,9 +21,6 @@ var Bird = function(game, x, y, frame) {
 
 
   this.events.onKilled.add(this.onKilled, this);
-
-
-
 };
 
 Bird.prototype = Object.create(Phaser.Sprite.prototype);
@@ -59,10 +55,6 @@ Bird.prototype.onKilled = function() {
   this.exists = true;
   this.visible = true;
   this.animations.stop();
-  var duration = 90 / this.y * 300;
-  this.game.add.tween(this).to({angle: 90}, duration).start();
-  console.log('killed');
-  console.log('alive:', this.alive);
 };
 
 module.exports = Bird;

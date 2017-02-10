@@ -31,7 +31,6 @@ Play.prototype = {
     this.ground = new Ground(this.game, 0, 488, 1000, 112);
     this.game.add.existing(this.ground);
 
-
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.flapKey.onDown.addOnce(this.startGame, this);
@@ -40,8 +39,6 @@ Play.prototype = {
 
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
-
-
 
     this.score = 0;
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
@@ -74,9 +71,6 @@ Play.prototype = {
             this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
-
-
-
   },
   shutdown: function() {
     this.game.input.keyboard.removeKey(Phaser.Keyboard.SPACEBAR);

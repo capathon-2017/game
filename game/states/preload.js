@@ -24,8 +24,6 @@ Preload.prototype = {
     this.load.image('getReady', 'assets/get-ready.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
-    this.load.spritesheet('medals', 'assets/medals.png',44, 46, 2);
-    this.load.image('gameover', 'assets/gameover.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');
@@ -35,6 +33,8 @@ Preload.prototype = {
     this.load.audio('ouch', 'assets/ouch.wav');
 
     this.load.bitmapFont('flappyfont', 'assets/fonts/flappyfont/flappyfont.png', 'assets/fonts/flappyfont/flappyfont.fnt');
+
+    this.load.json('questions', 'assets/questions.json');
 
   },
   create: function() {

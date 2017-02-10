@@ -33,10 +33,10 @@ module.exports = function (grunt) {
     },
     connect: {
       options: {
-        port: 9000,
-        // change this to '0.0.0.0' to access the server from outside
-        hostname: '0.0.0.0'
-      },
+         port: 9000,
+         // change this to '0.0.0.0' to access the server from outside
+         hostname: '0.0.0.0'
+       },
       livereload: {
         options: {
           middleware: function (connect) {
@@ -49,10 +49,10 @@ module.exports = function (grunt) {
       }
     },
     open: {
-      server: {
+     server: {
         path: 'http://localhost:<%= connect.options.port %>'
-      }
-    },
+       }
+     },
     copy: {
       prod: {
         files: [
@@ -66,7 +66,6 @@ module.exports = function (grunt) {
       }
     },
     browserify: {
-      
       build: {
         src: ['game/main.js'],
         dest: 'dist/js/game.js'
