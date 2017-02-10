@@ -4,3 +4,5 @@ bower_components/
 .idea
 game.iml
 dist/
+dist/js/game.js
+dist/js/game.js

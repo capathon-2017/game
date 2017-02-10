@@ -2,7 +2,7 @@
 
 var Pipe = require('./pipe');
 
-var PipeGroup = function(game, parent) {
+var PipeGroup = function(game, parent, speed) {
 
   Phaser.Group.call(this, game, parent);
 
@@ -12,14 +12,14 @@ var PipeGroup = function(game, parent) {
   this.add(this.bottomPipe);
   this.hasScored = false;
 
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
 };
 
 PipeGroup.prototype = Object.create(Phaser.Group.prototype);
 PipeGroup.prototype.constructor = PipeGroup;
 
 PipeGroup.prototype.update = function() {
-  this.checkWorldBounds(); 
+  this.checkWorldBounds();
 };
 
 PipeGroup.prototype.checkWorldBounds = function() {
@@ -28,12 +28,12 @@ PipeGroup.prototype.checkWorldBounds = function() {
   }
 };
 
-PipeGroup.prototype.reset = function(x, y) {
+PipeGroup.prototype.reset = function(x, y, speed) {
   this.topPipe.reset(0,0);
   this.bottomPipe.reset(0,520);
   this.x = x;
   this.y = y;
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
   this.hasScored = false;
   this.exists = true;
 };
@@ -42,5 +42,9 @@ PipeGroup.prototype.reset = function(x, y) {
 PipeGroup.prototype.stop = function() {
   this.setAll('body.velocity.x', 0);
 };
+
+PipeGroup.prototype.updateSpeed = function(speed) {
+  this.setAll('body.velocity.x', speed);
+}
 
 module.exports = PipeGroup;

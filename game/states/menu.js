@@ -12,8 +12,8 @@ Menu.prototype = {
 
     // add the ground sprite as a tile
     // and start scrolling in the negative x direction
-    this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
-    this.ground.autoScroll(-200,0);
+    //this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
+    //this.ground.autoScroll(-200,0);
 
     /** STEP 1 **/
     // create a group to put the title assets in
@@ -29,18 +29,18 @@ Menu.prototype = {
     /** STEP 3 **/
     // create the bird sprite
     // and add it to the title group
-    this.bird = this.add.sprite(200,5,'bird');
-    this.titleGroup.add(this.bird);
+    //this.bird = this.add.sprite(200,5,'bird');
+    //this.titleGroup.add(this.bird);
 
     /** STEP 4 **/
     // add an animation to the bird
     // and begin the animation
-    this.bird.animations.add('flap');
-    this.bird.animations.play('flap', 12, true);
+    //this.bird.animations.add('flap');
+    //this.bird.animations.play('flap', 12, true);
 
     /** STEP 5 **/
     // Set the originating location of the group
-    this.titleGroup.x = 30;
+    this.titleGroup.x = 275;
     this.titleGroup.y = 100;
 
     /** STEP 6 **/

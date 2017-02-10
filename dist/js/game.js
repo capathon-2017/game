@@ -7,7 +7,7 @@ var MenuState = require('./states/menu');
 var PlayState = require('./states/play');
 var PreloadState = require('./states/preload');
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'wildcard');
+var game = new Phaser.Game(800, 500, Phaser.AUTO, 'wildcard');
 
 // Game States
 game.state.add('boot', BootState);
@@ -193,7 +193,7 @@ module.exports = Pipe;
 
 var Pipe = require('./pipe');
 
-var PipeGroup = function(game, parent) {
+var PipeGroup = function(game, parent, speed) {
 
   Phaser.Group.call(this, game, parent);
 
@@ -203,14 +203,14 @@ var PipeGroup = function(game, parent) {
   this.add(this.bottomPipe);
   this.hasScored = false;
 
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
 };
 
 PipeGroup.prototype = Object.create(Phaser.Group.prototype);
 PipeGroup.prototype.constructor = PipeGroup;
 
 PipeGroup.prototype.update = function() {
-  this.checkWorldBounds(); 
+  this.checkWorldBounds();
 };
 
 PipeGroup.prototype.checkWorldBounds = function() {
@@ -219,12 +219,12 @@ PipeGroup.prototype.checkWorldBounds = function() {
   }
 };
 
-PipeGroup.prototype.reset = function(x, y) {
+PipeGroup.prototype.reset = function(x, y, speed) {
   this.topPipe.reset(0,0);
   this.bottomPipe.reset(0,520);
   this.x = x;
   this.y = y;
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
   this.hasScored = false;
   this.exists = true;
 };
@@ -234,7 +234,12 @@ PipeGroup.prototype.stop = function() {
   this.setAll('body.velocity.x', 0);
 };
 
+PipeGroup.prototype.updateSpeed = function(speed) {
+  this.setAll('body.velocity.x', speed);
+}
+
 module.exports = PipeGroup;
+
 },{"./pipe":5}],7:[function(require,module,exports){
 'use strict';
 
@@ -378,8 +383,8 @@ Menu.prototype = {
 
     // add the ground sprite as a tile
     // and start scrolling in the negative x direction
-    this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
-    this.ground.autoScroll(-200,0);
+    //this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
+    //this.ground.autoScroll(-200,0);
 
     /** STEP 1 **/
     // create a group to put the title assets in
@@ -395,18 +400,18 @@ Menu.prototype = {
     /** STEP 3 **/
     // create the bird sprite
     // and add it to the title group
-    this.bird = this.add.sprite(200,5,'bird');
-    this.titleGroup.add(this.bird);
+    //this.bird = this.add.sprite(200,5,'bird');
+    //this.titleGroup.add(this.bird);
 
     /** STEP 4 **/
     // add an animation to the bird
     // and begin the animation
-    this.bird.animations.add('flap');
-    this.bird.animations.play('flap', 12, true);
+    //this.bird.animations.add('flap');
+    //this.bird.animations.play('flap', 12, true);
 
     /** STEP 5 **/
     // Set the originating location of the group
-    this.titleGroup.x = 30;
+    this.titleGroup.x = 275;
     this.titleGroup.y = 100;
 
     /** STEP 6 **/
@@ -458,8 +463,9 @@ Play.prototype = {
     this.game.add.existing(this.bird);
 
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 488, 1000, 112);
-    this.game.add.existing(this.ground);
+    // this.ground = new Ground(this.game, 0, 488, 1000, 112);
+    // this.game.add.existing(this.ground);
+
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -477,7 +483,7 @@ Play.prototype = {
 
     this.instructionGroup = this.game.add.group();
     this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 100,'getReady'));
-    this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
+    //this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
     this.instructionGroup.setAll('anchor.x', 0.5);
     this.instructionGroup.setAll('anchor.y', 0.5);
 
@@ -492,6 +498,8 @@ Play.prototype = {
     this.previousCenter = 0;
     this.changeY = 0;
 
+    this.speedUpdater = null;
+    this.speed = -200;
 
   },
   update: function() {
@@ -502,7 +510,7 @@ Play.prototype = {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
-            this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
+            // this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
   },
@@ -517,8 +525,11 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.1, this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.speed), this.generatePipes, this);
         this.pipeGenerator.timer.start();
+
+        this.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
+        this.speedUpdater.timer.start();
 
         this.instructionGroup.destroy();
     }
@@ -559,43 +570,58 @@ Play.prototype = {
     var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
     var trend = this.changeY + randomChange;
 
-    //Dampen the change 
+    //Dampen the change
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    if(newPipeY >= 250 || newPipeY <= -250){
-        newPipeY = Math.sign(newPipeY)*249; // bound to the max 
+    if(newPipeY >= 140 || newPipeY <= -140){
+        newPipeY = Math.sign(newPipeY)*140; // bound to the max
         trend = Math.sign(newPipeY)*-5; //reverse the trend
-    }    
+    }
 
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
+    console.log("Size pipes: " + this.pipes.length);
+    //this.pipes.foreach()
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);  
+        pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY);    
+    pipeGroup.reset(this.game.width, newPipeY, this.speed);
+
+    if(this.pipes.length > 100){
+        var pipeGroup = this.pipes.getFirstExists(false);
+        if(pipeGroup){
+            pipeGroup.destroy();
+        }
+    }
 
     //Update variables
     this.previousCenter = newPipeY;
-    this.changeY = newChangeY;    
+    this.changeY = newChangeY;
 
   },
 
   calculateMaxVar: function(current_score){
-    var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
-    // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+    var maxVar = 10*(1+(Math.floor(current_score%100.0)));
+    console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
     return maxVar;
   },
   resetGame: function () {
     this.create();
     this.startGame();
+    this.pipes.destroy();
+  },
+  updateSpeed: function() {
+    this.speed -= 10;
+    console.log('speed: ' + this.speed);
+    this.pipes.callAll('updateSpeed', null, this.speed);
+    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.speed);
   }
 };
 
 module.exports = Play;
 
 },{"../prefabs/bird":2,"../prefabs/ground":3,"../prefabs/highscore":4,"../prefabs/pipe":5,"../prefabs/pipeGroup":6,"../prefabs/scoreboard":7}],11:[function(require,module,exports){
-
 'use strict';
 function Preload() {
   this.asset = null;
@@ -609,12 +635,12 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-    this.load.image('background', 'assets/background.png');
+    this.load.image('background', 'assets/background_blue.png');
     this.load.image('ground', 'assets/ground.png');
     this.load.image('title', 'assets/title.png');
     this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
     this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
-    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 24,320,2);
+    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 108,320,2);
     this.load.image('startButton', 'assets/start-button.png');
 
     this.load.image('instructions', 'assets/instructions.png');
