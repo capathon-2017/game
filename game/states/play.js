@@ -26,30 +26,10 @@ Play.prototype = {
     // create and add a new Bird object
     this.bird = new Bird(this.game, 100, this.game.height/2);
     this.game.add.existing(this.bird);
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 670f2a38f3a16e6ae29d8a42a01b8e8f1fbbe7a0
     // create and add a new Ground object
     this.ground = new Ground(this.game, 0, 488, 1000, 112);
     this.game.add.existing(this.ground);
-<<<<<<< HEAD
-    
-    // add keyboard controls
-    this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    this.flapKey.onDown.addOnce(this.startGame, this);
-    this.flapKey.onDown.add(this.bird.flap, this.bird);
-    
-    // add mouse/touch controls
-    this.game.input.onDown.addOnce(this.startGame, this);
-    this.game.input.onDown.add(this.bird.flap, this.bird);
-    
-    // keep the spacebar from propogating up to the browser
-    this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
-
-=======
-
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -60,9 +40,6 @@ Play.prototype = {
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 
-
-
->>>>>>> 670f2a38f3a16e6ae29d8a42a01b8e8f1fbbe7a0
     this.score = 0;
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
 
@@ -94,12 +71,6 @@ Play.prototype = {
             this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> 670f2a38f3a16e6ae29d8a42a01b8e8f1fbbe7a0
   },
   shutdown: function() {
     this.game.input.keyboard.removeKey(Phaser.Keyboard.SPACEBAR);
