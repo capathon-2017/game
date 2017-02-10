@@ -40,7 +40,9 @@ Play.prototype = {
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
 
-    this.score = 0;
+    if(this.score === undefined) {
+        this.score = 0;
+    }
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
 
     this.instructionGroup = this.game.add.group();
@@ -56,7 +58,9 @@ Play.prototype = {
     this.pipeHitSound = this.game.add.audio('pipeHit');
     this.groundHitSound = this.game.add.audio('groundHit');
     this.scoreSound = this.game.add.audio('score');
+
     this.previousCenter = 0;
+    this.changeY = 0;
 
 
   },
@@ -83,7 +87,7 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.04, this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.1, this.generatePipes, this);
         this.pipeGenerator.timer.start();
 
         this.instructionGroup.destroy();
@@ -98,15 +102,11 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    // if(enemy instanceof Ground && !this.bird.onGround) {
-        this.groundHitSound.play();
-        this.scoreboard = new Scoreboard(this.game);
-        this.game.add.existing(this.scoreboard);
-        this.scoreboard.show(this.score);
-        this.bird.onGround = true;
-    // } else if (enemy instanceof Pipe){
-    //     this.pipeHitSound.play();
-    // }
+    this.game.physics.arcade.gravity.y = 0;
+    this.groundHitSound.play();
+    this.scoreboard = new Scoreboard(this.game, this);
+    this.game.add.existing(this.scoreboard);
+    this.scoreboard.show(this.score);
 
     if(!this.gameover) {
         this.gameover = true;
@@ -118,28 +118,32 @@ Play.prototype = {
 
   },
   generatePipes: function() {
+    // Difficulty decides on max slope
+    var maxVar = this.calculateMaxVar(this.score);
 
-    var testScore = this.score;
-    var maxVar = this.calculateMaxVar(testScore);
-    var varTop = this.game.rnd.integerInRange(-10, 10);
-    // var varBot = this.game.rnd.integerInRange(-1, 1);
-    var pipeY = this.previousCenter + varTop;
-    this.previousCenter = pipeY;
+    // Random slope calculation
+    var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
+    var trend = this.changeY + randomChange;
 
+    //Dampen the change 
+    var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
+
+    var newPipeY = this.previousCenter + this.changeY;
+    if(newPipeY >= 250 || newPipeY <= -250){
+        newPipeY = Math.sign(newPipeY)*249; // bound to the max 
+        trend = Math.sign(newPipeY)*-5; //reverse the trend
+    }    
+
+    // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes);  
     }
-    pipeGroup.reset(this.game.width, pipeY);    
+    pipeGroup.reset(this.game.width, newPipeY);    
 
-/* ORIGINAL 
-    var pipeY = this.game.rnd.integerInRange(-100, 100);
-    var pipeGroup = this.pipes.getFirstExists(false);
-    if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);
-    }
-    pipeGroup.reset(this.game.width, pipeY);
-*/    
+    //Update variables
+    this.previousCenter = newPipeY;
+    this.changeY = newChangeY;    
 
   },
 
@@ -147,6 +151,10 @@ Play.prototype = {
     var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
     // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
     return maxVar;
+  },
+  resetGame: function () {
+    this.create();
+    this.startGame();
   }
 };
 
