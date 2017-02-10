@@ -66,11 +66,14 @@ Play.prototype = {
     this.pipeHitSound = this.game.add.audio('pipeHit');
     this.groundHitSound = this.game.add.audio('groundHit');
     this.scoreSound = this.game.add.audio('score');
+
+    this.previousCenter = 0;
+
     
   },
   update: function() {
     // enable collisions between the bird and the ground
-    this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
+    // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
 
     if(!this.gameover) {    
         // enable collisions between the bird and each group in the pipes group
@@ -93,8 +96,8 @@ Play.prototype = {
     if(!this.bird.alive && !this.gameover) {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
-        // add a timer
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 1.25, this.generatePipes, this);
+        // add a timer : fluid: 0.20 * second
+        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.04, this.generatePipes, this);
         this.pipeGenerator.timer.start();
 
         this.instructionGroup.destroy();
@@ -109,15 +112,16 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    if(enemy instanceof Ground && !this.bird.onGround) {
+    console.log('Deathhandler called');
+    // if(enemy instanceof Ground && !this.bird.onGround) {
         this.groundHitSound.play();
         this.scoreboard = new Scoreboard(this.game);
         this.game.add.existing(this.scoreboard);
         this.scoreboard.show(this.score);
         this.bird.onGround = true;
-    } else if (enemy instanceof Pipe){
-        this.pipeHitSound.play();
-    }
+    // } else if (enemy instanceof Pipe){
+    //     this.pipeHitSound.play();
+    // }
 
     if(!this.gameover) {
         this.gameover = true;
@@ -129,13 +133,29 @@ Play.prototype = {
     
   },
   generatePipes: function() {
+    console.log('Previous previousCenter: ' + this.previousCenter);
+
+    var varTop = this.game.rnd.integerInRange(-10, 10);
+    // var varBot = this.game.rnd.integerInRange(-1, 1);
+    var pipeY = this.previousCenter + varTop;
+    this.previousCenter = pipeY;
+
+    var pipeGroup = this.pipes.getFirstExists(false);
+    if(!pipeGroup) {
+        pipeGroup = new PipeGroup(this.game, this.pipes);  
+    }
+    pipeGroup.reset(this.game.width, pipeY);    
+
+/* ORIGINAL 
     var pipeY = this.game.rnd.integerInRange(-100, 100);
     var pipeGroup = this.pipes.getFirstExists(false);
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes);  
     }
     pipeGroup.reset(this.game.width, pipeY);
-    
+    console.log('pipeY: ' + pipeY);
+
+*/    
 
   }
 };

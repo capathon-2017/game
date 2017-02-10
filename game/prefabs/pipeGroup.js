@@ -7,7 +7,7 @@ var PipeGroup = function(game, parent) {
   Phaser.Group.call(this, game, parent);
 
   this.topPipe = new Pipe(this.game, 0, 0, 0);
-  this.bottomPipe = new Pipe(this.game, 0, 440, 1);
+  this.bottomPipe = new Pipe(this.game, 0, 520, 1);
   this.add(this.topPipe);
   this.add(this.bottomPipe);
   this.hasScored = false;
@@ -28,10 +28,9 @@ PipeGroup.prototype.checkWorldBounds = function() {
   }
 };
 
-
 PipeGroup.prototype.reset = function(x, y) {
   this.topPipe.reset(0,0);
-  this.bottomPipe.reset(0,440);
+  this.bottomPipe.reset(0,520);
   this.x = x;
   this.y = y;
   this.setAll('body.velocity.x', -200);

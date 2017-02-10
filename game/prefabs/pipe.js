@@ -1,7 +1,7 @@
 'use strict';
 
 var Pipe = function(game, x, y, frame) {
-  Phaser.Sprite.call(this, game, x, y, 'pipe', frame);
+  Phaser.Sprite.call(this, game, x, y, 'ground_pipe', frame);
   this.anchor.setTo(0.5, 0.5);
   this.game.physics.arcade.enableBody(this);
 
