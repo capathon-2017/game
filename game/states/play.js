@@ -64,7 +64,7 @@ Play.prototype = {
 
   },
   update: function() {
-    // enable collisions between the bird and the ground
+    // not enable collisions between the bird and the ground
     // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
 
     if(!this.gameover) {
@@ -104,7 +104,6 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    console.log('Deathhandler called');
     // if(enemy instanceof Ground && !this.bird.onGround) {
         this.groundHitSound.play();
         this.scoreboard = new Scoreboard(this.game);
@@ -125,8 +124,9 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    console.log('Previous previousCenter: ' + this.previousCenter);
 
+    var testScore = this.score;
+    var maxVar = this.calculateMaxVar(testScore);
     var varTop = this.game.rnd.integerInRange(-10, 10);
     // var varBot = this.game.rnd.integerInRange(-1, 1);
     var pipeY = this.previousCenter + varTop;
@@ -147,6 +147,12 @@ Play.prototype = {
     pipeGroup.reset(this.game.width, pipeY);
 */    
 
+  },
+
+  calculateMaxVar: function(current_score){
+    var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
+    // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+    return maxVar;
   }
 };
 
