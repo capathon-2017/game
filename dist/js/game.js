@@ -403,8 +403,9 @@ Play.prototype = {
     this.game.add.existing(this.bird);
 
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 488, 1000, 112);
-    this.game.add.existing(this.ground);
+    // this.ground = new Ground(this.game, 0, 488, 1000, 112);
+    // this.game.add.existing(this.ground);
+
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -422,7 +423,7 @@ Play.prototype = {
 
     this.instructionGroup = this.game.add.group();
     this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 100,'getReady'));
-    this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
+    //this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
     this.instructionGroup.setAll('anchor.x', 0.5);
     this.instructionGroup.setAll('anchor.y', 0.5);
 
@@ -449,7 +450,7 @@ Play.prototype = {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
-            this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
+            // this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
   },
@@ -509,17 +510,26 @@ Play.prototype = {
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    if(newPipeY >= 250 || newPipeY <= -250){
-        newPipeY = Math.sign(newPipeY)*249; // bound to the max
+    if(newPipeY >= 140 || newPipeY <= -140){
+        newPipeY = Math.sign(newPipeY)*140; // bound to the max
         trend = Math.sign(newPipeY)*-5; //reverse the trend
     }
 
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
+    console.log("Size pipes: " + this.pipes.length);
+    //this.pipes.foreach()
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
     }
     pipeGroup.reset(this.game.width, newPipeY, this.speed);
+
+    if(this.pipes.length > 100){
+        var pipeGroup = this.pipes.getFirstExists(false);
+        if(pipeGroup){
+            pipeGroup.destroy();
+        }
+    }
 
     //Update variables
     this.previousCenter = newPipeY;
@@ -528,8 +538,8 @@ Play.prototype = {
   },
 
   calculateMaxVar: function(current_score){
-    var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
-    // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+    var maxVar = 10*(1+(Math.floor(current_score%100.0)));
+    console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
     return maxVar;
   },
   resetGame: function () {
@@ -566,7 +576,8 @@ Preload.prototype = {
     this.load.image('ground', 'assets/ground.png');
     this.load.image('title', 'assets/title.png');
     this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
-    this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
+    this.load.spritesheet('pipe', 'assets/pipes.png', 108,320,2);
+
     this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 12,320,2);
     this.load.image('startButton', 'assets/start-button.png');
 
