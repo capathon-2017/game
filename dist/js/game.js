@@ -208,17 +208,18 @@ Scoreboard.prototype.show = function(score) {
     var style = { font: "20px Arial", fill: "#000000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
 
     var topMargin = this.scoreboard.height - 70;
+    var leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 20;
 
     var question = this.questions.question;
 
-    this.questionText = this.game.add.text(0, (this.game.height / 2) - topMargin, question.text, style);
+    this.questionText = this.game.add.text(leftMargin, (this.game.height / 2.4) - topMargin, question.text, style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 1.75 - (i * 0.18);
-        this.answers[i] = this.game.add.text(0, (this.game.height / offset) - topMargin, question.options[i], style);
+        var offset = 2.1 - (i * 0.20);
+        this.answers[i] = this.game.add.text(leftMargin, (this.game.height / offset) - topMargin, question.options[i], style);
         this.answers[i].inputEnabled = true;
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question});
         this.answers[i].events.onInputOver.add(this.makeTextBold, this);
@@ -465,7 +466,6 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    console.log('Previous previousCenter: ' + this.previousCenter);
 
     var varTop = this.game.rnd.integerInRange(-10, 10);
     // var varBot = this.game.rnd.integerInRange(-1, 1);

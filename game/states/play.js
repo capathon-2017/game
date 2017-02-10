@@ -119,7 +119,6 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    console.log('Previous previousCenter: ' + this.previousCenter);
 
     var varTop = this.game.rnd.integerInRange(-10, 10);
     // var varBot = this.game.rnd.integerInRange(-1, 1);
