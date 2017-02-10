@@ -5,6 +5,7 @@ var Ground = require('../prefabs/ground');
 var Pipe = require('../prefabs/pipe');
 var PipeGroup = require('../prefabs/pipeGroup');
 var Scoreboard = require('../prefabs/scoreboard');
+var Highscore = require('../prefabs/highscore');
 
 function Play() {
 }
@@ -107,6 +108,10 @@ Play.prototype = {
     this.scoreboard = new Scoreboard(this.game, this);
     this.game.add.existing(this.scoreboard);
     this.scoreboard.show(this.score);
+
+    this.highscore = new Highscore(this.game);
+    this.highscore.visible = false;
+    this.game.add.existing(this.highscore);
 
     if(!this.gameover) {
         this.gameover = true;

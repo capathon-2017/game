@@ -63,9 +63,9 @@ Scoreboard.prototype.answerClicked = function () {
                 result = true;
             }
             else { 
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
@@ -78,8 +78,8 @@ Scoreboard.prototype.answerClicked = function () {
         this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
     }
     else {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
-    }
+        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+    } 
 
 };
 Scoreboard.prototype.makeTextBold = function (item) {
@@ -96,7 +96,12 @@ Scoreboard.prototype.resumeGame = function() {
     this.context.mainHandler.resetGame();
 };
 Scoreboard.prototype.exitGame = function() {
-    //show highscore
+    this.context.mainHandler.scoreboard.visible = false;
+    this.firstLine.visible = false;
+    this.secondLine.visible = false;
+    this.thirdLine.visible = false;
+    this.continueButton.visible = false;
+    this.context.mainHandler.highscore.show(this.context.mainHandler);
 };
 
 module.exports = Scoreboard;

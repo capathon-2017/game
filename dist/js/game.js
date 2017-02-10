@@ -19,7 +19,7 @@ game.state.add('preload', PreloadState);
 game.state.start('boot');
 
   
-},{"./states/boot":7,"./states/menu":8,"./states/play":9,"./states/preload":10}],2:[function(require,module,exports){
+},{"./states/boot":8,"./states/menu":9,"./states/play":10,"./states/preload":11}],2:[function(require,module,exports){
 'use strict';
 
 var Bird = function(game, x, y, frame) {
@@ -115,6 +115,60 @@ module.exports = Ground;
 },{}],4:[function(require,module,exports){
 'use strict';
 
+var Highscore = function(game) {
+	Phaser.Group.call(this, game);
+	this.game = game;
+	this.highscore = this.create(this.game.width - 400, 300, 'highscore');
+	this.highscore.anchor.setTo(0.5, 0.5); 
+
+	this.highscores = this.game.cache._json.highscores.data.highscores;
+
+	this.y = this.game.height;
+	this.x = 0;
+};
+
+Highscore.prototype = Object.create(Phaser.Group.prototype);
+Highscore.prototype.constructor = Highscore;
+
+Highscore.prototype.show = function(context) {
+	context.highscore.visible = true;
+	this.topMargin = context.highscore.height - 70;
+    this.leftMargin = 220;
+    this.scores = [];
+
+	for(var i = 0; i < this.highscores.length; i++) {
+		var offset = 2.1 - (i * 0.20);
+		var text = this.highscores[i].user + ": " + this.highscores[i].score;
+		if(i > 0) {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
+		}
+		else {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
+		}
+	}
+
+	 this.game.add.button(this.leftMargin + 130, this.game.width - 350, 'startButton', this.end, this);
+
+    this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
+};
+Highscore.prototype.makeTextBold = function (item) {
+   item.fontWeight = "bold";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
+Highscore.prototype.makeTextNormal = function (item) {
+   item.fontWeight = "normal";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
+Highscore.prototype.end = function () {
+	debugger;
+}
+module.exports = Highscore;
+
+},{}],5:[function(require,module,exports){
+'use strict';
+
 var Pipe = function(game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'ground_pipe', frame);
   this.anchor.setTo(0.5, 0.5);
@@ -134,7 +188,7 @@ Pipe.prototype.update = function() {
 };
 
 module.exports = Pipe;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var Pipe = require('./pipe');
@@ -181,7 +235,7 @@ PipeGroup.prototype.stop = function() {
 };
 
 module.exports = PipeGroup;
-},{"./pipe":4}],6:[function(require,module,exports){
+},{"./pipe":5}],7:[function(require,module,exports){
 'use strict';
 
 var Scoreboard = function(game, mainHandler) {
@@ -247,9 +301,9 @@ Scoreboard.prototype.answerClicked = function () {
                 result = true;
             }
             else { 
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
@@ -262,8 +316,8 @@ Scoreboard.prototype.answerClicked = function () {
         this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
     }
     else {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
-    }
+        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+    } 
 
 };
 Scoreboard.prototype.makeTextBold = function (item) {
@@ -280,12 +334,17 @@ Scoreboard.prototype.resumeGame = function() {
     this.context.mainHandler.resetGame();
 };
 Scoreboard.prototype.exitGame = function() {
-    //show highscore
+    this.context.mainHandler.scoreboard.visible = false;
+    this.firstLine.visible = false;
+    this.secondLine.visible = false;
+    this.thirdLine.visible = false;
+    this.continueButton.visible = false;
+    this.context.mainHandler.highscore.show(this.context.mainHandler);
 };
 
 module.exports = Scoreboard;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 'use strict';
 
@@ -304,7 +363,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -367,7 +426,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 'use strict';
 var Bird = require('../prefabs/bird');
@@ -375,6 +434,7 @@ var Ground = require('../prefabs/ground');
 var Pipe = require('../prefabs/pipe');
 var PipeGroup = require('../prefabs/pipeGroup');
 var Scoreboard = require('../prefabs/scoreboard');
+var Highscore = require('../prefabs/highscore');
 
 function Play() {
 }
@@ -478,6 +538,10 @@ Play.prototype = {
     this.game.add.existing(this.scoreboard);
     this.scoreboard.show(this.score);
 
+    this.highscore = new Highscore(this.game);
+    this.highscore.visible = false;
+    this.game.add.existing(this.highscore);
+
     if(!this.gameover) {
         this.gameover = true;
         this.bird.kill();
@@ -530,7 +594,7 @@ Play.prototype = {
 
 module.exports = Play;
 
-},{"../prefabs/bird":2,"../prefabs/ground":3,"../prefabs/pipe":4,"../prefabs/pipeGroup":5,"../prefabs/scoreboard":6}],10:[function(require,module,exports){
+},{"../prefabs/bird":2,"../prefabs/ground":3,"../prefabs/highscore":4,"../prefabs/pipe":5,"../prefabs/pipeGroup":6,"../prefabs/scoreboard":7}],11:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -557,7 +621,7 @@ Preload.prototype = {
     this.load.image('getReady', 'assets/get-ready.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
-    this.load.image('answer', 'assets/answer.png');
+    this.load.image('highscore', 'assets/highscore.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');
@@ -569,6 +633,7 @@ Preload.prototype = {
     this.load.bitmapFont('flappyfont', 'assets/fonts/flappyfont/flappyfont.png', 'assets/fonts/flappyfont/flappyfont.fnt');
 
     this.load.json('questions', 'assets/questions.json');
+    this.load.json('highscores', 'assets/highscoresmock.json');
 
   },
   create: function() {
