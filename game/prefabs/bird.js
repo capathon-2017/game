@@ -23,8 +23,8 @@ var Bird = function(game, x, y, frame) {
 
   this.events.onKilled.add(this.onKilled, this);
 
-  
-  
+
+
 };
 
 Bird.prototype = Object.create(Phaser.Sprite.prototype);
@@ -35,7 +35,7 @@ Bird.prototype.update = function() {
   // if it is rotate the bird towards the ground by 2.5 degrees
   if(this.angle < 90 && this.alive) {
     this.angle += 2.5;
-  } 
+  }
 
   if(!this.alive) {
     this.body.velocity.x = 0;
@@ -46,13 +46,13 @@ Bird.prototype.flap = function() {
   if(!!this.alive) {
     this.flapSound.play();
     //cause our bird to "jump" upward
-    this.body.velocity.y = -400;
+    this.body.velocity.y = -100;
     // rotate the bird to -40 degrees
     this.game.add.tween(this).to({angle: -40}, 100).start();
   }
 };
 
-Bird.prototype.revived = function() { 
+Bird.prototype.revived = function() {
 };
 
 Bird.prototype.onKilled = function() {
