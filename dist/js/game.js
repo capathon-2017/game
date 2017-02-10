@@ -7,7 +7,7 @@ var MenuState = require('./states/menu');
 var PlayState = require('./states/play');
 var PreloadState = require('./states/preload');
 
-var game = new Phaser.Game(288, 505, Phaser.AUTO, 'flappy-bird-reborn');
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'flappy-bird-reborn');
 
 // Game States
 game.state.add('boot', BootState);
@@ -68,7 +68,7 @@ Bird.prototype.flap = function() {
   if(!!this.alive) {
     this.flapSound.play();
     //cause our bird to "jump" upward
-                                  this.body.velocity.y = -100;
+    this.body.velocity.y = -100;
     // rotate the bird to -40 degrees
     this.game.add.tween(this).to({angle: -40}, 100).start();
   }
@@ -194,20 +194,20 @@ module.exports = PipeGroup;
 'use strict';
 
 var Scoreboard = function(game) {
-  
+
   var gameover;
-  
+
   Phaser.Group.call(this, game);
   gameover = this.create(this.game.width / 2, 100, 'gameover');
   gameover.anchor.setTo(0.5, 0.5);
 
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
-  
-  this.scoreText = this.game.add.bitmapText(this.scoreboard.width, 180, 'flappyfont', '', 18);
+
+  this.scoreText = this.game.add.bitmapText((this.game.width / 2) + (this.scoreboard.width / 2) - 30, 180, 'flappyfont', '', 18);
   this.add(this.scoreText);
-  
-  this.bestText = this.game.add.bitmapText(this.scoreboard.width, 230, 'flappyfont', '', 18);
+
+  this.bestText = this.game.add.bitmapText((this.game.width / 2) + (this.scoreboard.width / 2) - 30, 230, 'flappyfont', '', 18);
   this.add(this.bestText);
 
   // add our start button with a callback
@@ -218,7 +218,7 @@ var Scoreboard = function(game) {
 
   this.y = this.game.height;
   this.x = 0;
-  
+
 };
 
 Scoreboard.prototype = Object.create(Phaser.Group.prototype);
@@ -249,10 +249,10 @@ Scoreboard.prototype.show = function(score) {
   this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 
   if (coin) {
-    
+
     coin.anchor.setTo(0.5, 0.5);
     this.scoreboard.addChild(coin);
-    
+
      // Emitters have a center point and a width/height, which extends from their center point to the left/right and up/down
     var emitter = this.game.add.emitter(coin.x, coin.y, 400);
     this.scoreboard.addChild(emitter);
@@ -276,7 +276,7 @@ Scoreboard.prototype.show = function(score) {
     emitter.setAll('body.allowGravity', false);
 
     emitter.start(false, 1000, 1000);
-    
+
   }
 };
 
@@ -328,13 +328,13 @@ Menu.prototype = {
 
     // add the ground sprite as a tile
     // and start scrolling in the negative x direction
-    this.ground = this.game.add.tileSprite(0,400, 335,112,'ground');
+    this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
     this.ground.autoScroll(-200,0);
 
     /** STEP 1 **/
     // create a group to put the title assets in
     // so they can be manipulated as a whole
-    this.titleGroup = this.game.add.group()
+    this.titleGroup = this.game.add.group();
 
     /** STEP 2 **/
     // create the title sprite
@@ -406,10 +406,8 @@ Play.prototype = {
     this.bird = new Bird(this.game, 100, this.game.height/2);
     this.game.add.existing(this.bird);
 
-
-
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 400, 335, 112);
+    this.ground = new Ground(this.game, 0, 488, 1000, 112);
     this.game.add.existing(this.ground);
 
 
@@ -537,10 +535,10 @@ Preload.prototype = {
     this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
     this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
     this.load.image('startButton', 'assets/start-button.png');
-    
+
     this.load.image('instructions', 'assets/instructions.png');
     this.load.image('getReady', 'assets/get-ready.png');
-    
+
     this.load.image('scoreboard', 'assets/scoreboard.png');
     this.load.spritesheet('medals', 'assets/medals.png',44, 46, 2);
     this.load.image('gameover', 'assets/gameover.png');

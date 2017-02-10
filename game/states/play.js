@@ -27,10 +27,8 @@ Play.prototype = {
     this.bird = new Bird(this.game, 100, this.game.height/2);
     this.game.add.existing(this.bird);
 
-
-
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 400, 335, 112);
+    this.ground = new Ground(this.game, 0, 488, 1000, 112);
     this.game.add.existing(this.ground);
 
 

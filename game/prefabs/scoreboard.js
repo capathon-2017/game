@@ -1,20 +1,20 @@
 'use strict';
 
 var Scoreboard = function(game) {
-  
+
   var gameover;
-  
+
   Phaser.Group.call(this, game);
   gameover = this.create(this.game.width / 2, 100, 'gameover');
   gameover.anchor.setTo(0.5, 0.5);
 
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
-  
-  this.scoreText = this.game.add.bitmapText(this.scoreboard.width, 180, 'flappyfont', '', 18);
+
+  this.scoreText = this.game.add.bitmapText((this.game.width / 2) + (this.scoreboard.width / 2) - 30, 180, 'flappyfont', '', 18);
   this.add(this.scoreText);
-  
-  this.bestText = this.game.add.bitmapText(this.scoreboard.width, 230, 'flappyfont', '', 18);
+
+  this.bestText = this.game.add.bitmapText((this.game.width / 2) + (this.scoreboard.width / 2) - 30, 230, 'flappyfont', '', 18);
   this.add(this.bestText);
 
   // add our start button with a callback
@@ -25,7 +25,7 @@ var Scoreboard = function(game) {
 
   this.y = this.game.height;
   this.x = 0;
-  
+
 };
 
 Scoreboard.prototype = Object.create(Phaser.Group.prototype);
@@ -56,10 +56,10 @@ Scoreboard.prototype.show = function(score) {
   this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 
   if (coin) {
-    
+
     coin.anchor.setTo(0.5, 0.5);
     this.scoreboard.addChild(coin);
-    
+
      // Emitters have a center point and a width/height, which extends from their center point to the left/right and up/down
     var emitter = this.game.add.emitter(coin.x, coin.y, 400);
     this.scoreboard.addChild(emitter);
@@ -83,7 +83,7 @@ Scoreboard.prototype.show = function(score) {
     emitter.setAll('body.allowGravity', false);
 
     emitter.start(false, 1000, 1000);
-    
+
   }
 };
 
