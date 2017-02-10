@@ -402,12 +402,14 @@ Play.prototype = {
     this.pipeHitSound = this.game.add.audio('pipeHit');
     this.groundHitSound = this.game.add.audio('groundHit');
     this.scoreSound = this.game.add.audio('score');
+
     this.previousCenter = 0;
+    this.changeY = 0;
 
 
   },
   update: function() {
-    // enable collisions between the bird and the ground
+    // not enable collisions between the bird and the ground
     // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
 
     if(!this.gameover) {
@@ -429,7 +431,7 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.04, this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.1, this.generatePipes, this);
         this.pipeGenerator.timer.start();
 
         this.instructionGroup.destroy();
@@ -444,7 +446,6 @@ Play.prototype = {
     }
   },
   deathHandler: function(bird, enemy) {
-    console.log('Deathhandler called');
     // if(enemy instanceof Ground && !this.bird.onGround) {
         this.groundHitSound.play();
         this.scoreboard = new Scoreboard(this.game);
@@ -465,28 +466,37 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    console.log('Previous previousCenter: ' + this.previousCenter);
+    // Difficulty decides on max slope
+    var maxVar = this.calculateMaxVar(this.score);
 
-    var varTop = this.game.rnd.integerInRange(-10, 10);
-    // var varBot = this.game.rnd.integerInRange(-1, 1);
-    var pipeY = this.previousCenter + varTop;
-    this.previousCenter = pipeY;
+    // Random slope calculation
+    var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
+    var trend = this.changeY + randomChange;
 
+    //Dampen the change 
+    var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
+
+    var newPipeY = this.previousCenter + this.changeY;
+    if(newPipeY >= 250 || newPipeY <= -250){
+        newPipeY = Math.sign(newPipeY)*249; // bound to the max 
+        trend = Math.sign(newPipeY)*-5; //reverse the trend
+    }    
+
+    // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes);  
     }
-    pipeGroup.reset(this.game.width, pipeY);    
+    pipeGroup.reset(this.game.width, newPipeY);    
 
-/* ORIGINAL 
-    var pipeY = this.game.rnd.integerInRange(-100, 100);
-    var pipeGroup = this.pipes.getFirstExists(false);
-    if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);
-    }
-    pipeGroup.reset(this.game.width, pipeY);
-*/    
+    //Update variables
+    this.previousCenter = newPipeY;
+    this.changeY = newChangeY;    
 
+  },
+
+  calculateMaxVar: function(current_score){
+    return 20+10*((Math.floor(current_score/10)));
   }
 };
 
@@ -512,7 +522,7 @@ Preload.prototype = {
     this.load.image('title', 'assets/title.png');
     this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
     this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
-    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 12,320,2);
+    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 24,320,2);
     this.load.image('startButton', 'assets/start-button.png');
 
     this.load.image('instructions', 'assets/instructions.png');
