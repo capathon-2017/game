@@ -34,7 +34,6 @@ var Bird = function(game, x, y, frame) {
   this.alive = false;
   this.onGround = false;
 
-
   // enable physics on the bird
   // and disable gravity on the bird
   // until the game is started
@@ -44,9 +43,6 @@ var Bird = function(game, x, y, frame) {
 
 
   this.events.onKilled.add(this.onKilled, this);
-
-  
-  
 };
 
 Bird.prototype = Object.create(Phaser.Sprite.prototype);
@@ -81,10 +77,6 @@ Bird.prototype.onKilled = function() {
   this.exists = true;
   this.visible = true;
   this.animations.stop();
-  var duration = 90 / this.y * 300;
-  this.game.add.tween(this).to({angle: 90}, duration).start();
-  console.log('killed');
-  console.log('alive:', this.alive);
 };
 
 module.exports = Bird;
@@ -198,24 +190,12 @@ var Scoreboard = function(game) {
   var gameover;
   
   Phaser.Group.call(this, game);
-  gameover = this.create(this.game.width / 2, 100, 'gameover');
-  gameover.anchor.setTo(0.5, 0.5);
+
+  this.questions = this.game.cache._json.questions.data;
 
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
   
-  this.scoreText = this.game.add.bitmapText(this.scoreboard.width, 180, 'flappyfont', '', 18);
-  this.add(this.scoreText);
-  
-  this.bestText = this.game.add.bitmapText(this.scoreboard.width, 230, 'flappyfont', '', 18);
-  this.add(this.bestText);
-
-  // add our start button with a callback
-  this.startButton = this.game.add.button(this.game.width/2, 300, 'startButton', this.startClick, this);
-  this.startButton.anchor.setTo(0.5,0.5);
-
-  this.add(this.startButton);
-
   this.y = this.game.height;
   this.x = 0;
   
@@ -225,69 +205,57 @@ Scoreboard.prototype = Object.create(Phaser.Group.prototype);
 Scoreboard.prototype.constructor = Scoreboard;
 
 Scoreboard.prototype.show = function(score) {
-  var coin, bestScore;
-  this.scoreText.setText(score.toString());
-  if(!!localStorage) {
-    bestScore = localStorage.getItem('bestScore');
-    if(!bestScore || bestScore < score) {
-      bestScore = score;
-      localStorage.setItem('bestScore', bestScore);
+
+    var style = { font: "20px Arial", fill: "#000000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
+
+    var topMargin = this.scoreboard.height - 70;
+
+    var question = this.questions.question;
+
+    this.questionText = this.game.add.text(0, (this.game.height / 2) - topMargin, question.text, style);
+    this.add(this.questionText);
+
+    this.answers = [];
+
+    for(var i = 0; i < question.options.length; i++) {
+        var offset = 1.75 - (i * 0.18);
+        this.answers[i] = this.game.add.text(0, (this.game.height / offset) - topMargin, question.options[i], style);
+        this.answers[i].inputEnabled = true;
+        this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question});
+        this.answers[i].events.onInputOver.add(this.makeTextBold, this);
+        this.answers[i].events.onInputOut.add(this.makeTextNormal, this);
+        this.add(this.answers[i]);
     }
-  } else {
-    bestScore = 'N/A';
-  }
 
-  this.bestText.setText(bestScore.toString());
-
-  if(score >= 10 && score < 20)
-  {
-    coin = this.game.add.sprite(-65 , 7, 'medals', 1);
-  } else if(score >= 20) {
-    coin = this.game.add.sprite(-65 , 7, 'medals', 0);
-  }
-
-  this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
-
-  if (coin) {
-    
-    coin.anchor.setTo(0.5, 0.5);
-    this.scoreboard.addChild(coin);
-    
-     // Emitters have a center point and a width/height, which extends from their center point to the left/right and up/down
-    var emitter = this.game.add.emitter(coin.x, coin.y, 400);
-    this.scoreboard.addChild(emitter);
-    emitter.width = coin.width;
-    emitter.height = coin.height;
-
-
-    //  This emitter will have a width of 800px, so a particle can emit from anywhere in the range emitter.x += emitter.width / 2
-    // emitter.width = 800;
-
-    emitter.makeParticles('particle');
-
-    // emitter.minParticleSpeed.set(0, 300);
-    // emitter.maxParticleSpeed.set(0, 600);
-
-    emitter.setRotation(-100, 100);
-    emitter.setXSpeed(0,0);
-    emitter.setYSpeed(0,0);
-    emitter.minParticleScale = 0.25;
-    emitter.maxParticleScale = 0.5;
-    emitter.setAll('body.allowGravity', false);
-
-    emitter.start(false, 1000, 1000);
-    
-  }
+    this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 };
-
+Scoreboard.prototype.answerClicked = function () {
+    for(var i = 0; i < this.question.options.length; i++) {
+        if(this.answer === this.question.options[i]) {
+            if(i == this.question.correct) {
+                //correct answer;
+                console.log("Yes, thats correct");
+            }
+            else {
+                console.log("ahhh you had the wrong answer");
+                //incorrect answer
+            }
+        }
+    }
+};
+Scoreboard.prototype.makeTextBold = function (item) {
+   item.fontWeight = "bold";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
+Scoreboard.prototype.makeTextNormal = function (item) {
+   item.fontWeight = "normal";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
 Scoreboard.prototype.startClick = function() {
   this.game.state.start('play');
 };
-
-
-
-
-
 Scoreboard.prototype.update = function() {
   // write your prefab's specific update code here
 };
@@ -406,28 +374,21 @@ Play.prototype = {
     this.bird = new Bird(this.game, 100, this.game.height/2);
     this.game.add.existing(this.bird);
     
-    
-
     // create and add a new Ground object
     this.ground = new Ground(this.game, 0, 400, 335, 112);
     this.game.add.existing(this.ground);
     
-
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.flapKey.onDown.addOnce(this.startGame, this);
     this.flapKey.onDown.add(this.bird.flap, this.bird);
     
-
     // add mouse/touch controls
     this.game.input.onDown.addOnce(this.startGame, this);
     this.game.input.onDown.add(this.bird.flap, this.bird);
     
-
     // keep the spacebar from propogating up to the browser
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
-
-    
 
     this.score = 0;
     this.scoreText = this.game.add.bitmapText(this.game.width/2, 10, 'flappyfont',this.score.toString(), 24);
@@ -458,9 +419,6 @@ Play.prototype = {
             this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
-
-
-    
   },
   shutdown: function() {
     this.game.input.keyboard.removeKey(Phaser.Keyboard.SPACEBAR);
@@ -547,8 +505,6 @@ Preload.prototype = {
     this.load.image('getReady', 'assets/get-ready.png');
     
     this.load.image('scoreboard', 'assets/scoreboard.png');
-    this.load.spritesheet('medals', 'assets/medals.png',44, 46, 2);
-    this.load.image('gameover', 'assets/gameover.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');
@@ -558,6 +514,8 @@ Preload.prototype = {
     this.load.audio('ouch', 'assets/ouch.wav');
 
     this.load.bitmapFont('flappyfont', 'assets/fonts/flappyfont/flappyfont.png', 'assets/fonts/flappyfont/flappyfont.fnt');
+
+    this.load.json('questions', 'assets/questions.json');
 
   },
   create: function() {
