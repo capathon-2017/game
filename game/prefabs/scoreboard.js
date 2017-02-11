@@ -27,7 +27,7 @@ Scoreboard.prototype.show = function(score) {
 
     this.makeRequest("http://192.168.1.2:3000/questions");
 
-    this.style = { font: "15px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
+    this.style = { font: "15px Arial", fill: "#000", wordWrap: true, wordWrapWidth: (this.scoreboard.width - 30), align: "center"};
 
     this.topMargin = this.scoreboard.height - 70;
     this.leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 10;
@@ -47,21 +47,21 @@ Scoreboard.prototype.answerClicked = function () {
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
+                this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Yes, thats correct", this.style);
                 points = this.context.pointsForDifficulty(this.question.difficulty);
                 result = true;
             }
             else {
-                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.9) - this.context.topMargin, "The right answer was:", this.style);
-                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.7) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 40), "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 70), this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
     }
 
-    var buttonTopMargin = 280;
-    var leftMargin = this.context.leftMargin + 150;
+    var buttonTopMargin = 180;
+    var leftMargin = this.context.leftMargin + 430;
 
     if(result) {
         this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, { "newContext": this, "points": points});
@@ -102,11 +102,11 @@ Scoreboard.prototype.resumeGame = function() {
     this.newContext.context.mainHandler.resetGame(this.points);
 };
 Scoreboard.prototype.exitGame = function() {
-    this.context.mainHandler.scoreboard.visible = false;
-    this.firstLine.visible = false;
-    this.secondLine.visible = false;
-    this.thirdLine.visible = false;
-    this.continueButton.visible = false;
+    this.context.mainHandler.scoreboard.destroy();
+    this.firstLine.destroy();
+    this.secondLine.destroy();
+    this.thirdLine.destroy();
+    this.continueButton.destroy();
     this.context.mainHandler.highscore.show(this.context.mainHandler);
 };
 Scoreboard.prototype.makeRequest = function (url) {
@@ -142,15 +142,17 @@ Scoreboard.prototype.addQuestions = function (questions) {
 
     var question = questionsArray[this.game.rnd.integerInRange(0, questionsArray.length -1)];
 
-    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 1.5) - this.topMargin, question.text, this.style);
+    this.titleStyle = { font: "15px Arial", fill: "#000", wordWrap: true, wordWrapWidth: (this.scoreboard.width - 30), align: "center", fontWeight: "bold"};
+
+    this.questionText = this.game.add.text(this.leftMargin + 230, (this.game.height / 1.4) - (this.topMargin - 10), question.text, this.titleStyle);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 1.8 - (i * 0.15);
-        this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
-        this.answers[i].inputEnabled = true;
+        var offset = 35 + (i * 50);
+        this.answers[i] = this.game.add.text(this.leftMargin + 230, (this.game.height / 1.3) - (this.topMargin - offset), question.options[i], this.style);
+        this.answers[i].inputEnabled = true; 
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});
         this.answers[i].events.onInputOver.add(this.makeTextBold, this);
         this.answers[i].events.onInputOut.add(this.makeTextNormal, this);

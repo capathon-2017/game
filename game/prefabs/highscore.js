@@ -64,7 +64,7 @@ Highscore.prototype.processHighscores = function () {
     if (httpRequest.status === 200) {
       highscoreContext.addHighscores(httpRequest.responseText);
     } else {
-      highscoreContext.addHighscores(highscoreContext.game.cache._cache.json.highscores.data.highscores);
+      highscoreContext.addHighscores(JSON.stringify(highscoreContext.game.cache._cache.json.highscores.data.highscores));
     }
   }
 }
