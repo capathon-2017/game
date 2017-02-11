@@ -43,10 +43,12 @@ Scoreboard.prototype.answerClicked = function () {
     }
 
     var result;
+    var points = 0;
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
                 this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
+                points = this.context.pointsForDifficulty(this.question.difficulty);
                 result = true;
             }
             else {
@@ -62,13 +64,29 @@ Scoreboard.prototype.answerClicked = function () {
     var leftMargin = this.context.leftMargin + 150;
 
     if(result) {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, this);
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, { "newContext": this, "points": points});
     }
     else {
         this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
         this.context.game.speed = -200;
     }
 
+};
+Scoreboard.prototype.pointsForDifficulty = function (difficulty) {
+  var points = 0;
+  if(difficulty == "very easy"){
+    points = 50;
+  }
+  else if(difficulty == "easy"){
+    points = 100;
+  }
+  else if(difficulty == "though"){
+    points = 250;
+  }
+  else if(difficulty == "very though"){
+    points = 500;
+  }
+  return points;
 };
 Scoreboard.prototype.makeTextBold = function (item) {
    item.fontWeight = "bold";
@@ -81,7 +99,7 @@ Scoreboard.prototype.makeTextNormal = function (item) {
    item.font = "Arial";
 };
 Scoreboard.prototype.resumeGame = function() {
-    this.context.mainHandler.resetGame();
+    this.newContext.context.mainHandler.resetGame(this.points);
 };
 Scoreboard.prototype.exitGame = function() {
     this.context.mainHandler.scoreboard.visible = false;

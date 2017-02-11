@@ -7,7 +7,7 @@ var PipeGroup = function(game, parent, speed) {
   Phaser.Group.call(this, game, parent);
 
   this.topPipe = new Pipe(this.game, 0, -50, 1);
-  this.bottomPipe = new Pipe(this.game, 0, 610, 0);
+  this.bottomPipe = new Pipe(this.game, 0, 620, 0);
   this.add(this.topPipe);
   this.add(this.bottomPipe);
   this.hasScored = false;
@@ -29,9 +29,9 @@ PipeGroup.prototype.checkWorldBounds = function() {
 };
 
 PipeGroup.prototype.reset = function(x, y, difficulty, speed) {
-  var tightenCave = Math.min(3*difficulty,150);
+  var tightenCave = Math.min(3*difficulty,80);
   this.topPipe.reset(0,-50);
-  this.bottomPipe.reset(0,610-tightenCave);
+  this.bottomPipe.reset(0,620-tightenCave);
   this.x = x;
   this.y = y;
   this.setAll('body.velocity.x', speed);

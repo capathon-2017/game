@@ -129,7 +129,7 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    this.difficultyLevel = Math.min(50,(Math.floor(this.score/30))); //max level is 50
+    this.difficultyLevel = Math.min(70,(Math.floor(this.score/50))); //max level is 50
     // Difficulty decides on max slope
     var maxVar = this.calculateMaxVar(this.score, this.difficultyLevel);
 
@@ -159,7 +159,7 @@ Play.prototype = {
     pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.game.speed);
 
 
-    if(this.pipes.length > 100){
+    if(this.pipes.length > 100){ 
         var pipeGroup = this.pipes.getFirstExists(false);
         if(pipeGroup){
             pipeGroup.destroy();
@@ -173,10 +173,13 @@ Play.prototype = {
   },
 
   calculateMaxVar: function(current_score, difficulty){
-    var maxVar = 100+20*(difficulty);
+    var maxVar = 100+10*(difficulty);
     return maxVar;
   },
-  resetGame: function () {
+  resetGame: function (addScore) {
+    if(addScore){
+        this.score = this.score + addScore;
+    }
     this.create();
     this.startGame();
     //this.pipes.destroy();
