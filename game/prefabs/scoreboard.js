@@ -47,7 +47,7 @@ Scoreboard.prototype.answerClicked = function () {
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Yes, thats correct", this.style);
+                this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Yes, thats correct", this.style);
                 points = this.context.pointsForDifficulty(this.question.difficulty);
                 result = true;
             }
