@@ -142,8 +142,8 @@ Play.prototype = {
 
     var newPipeY = this.previousCenter + this.changeY;
 
-    if(newPipeY >= 100) {
-        newPipeY = 100; // bound to the max
+    if(newPipeY >= 60) {
+        newPipeY = 60; // bound to the max
         trend = -5; //reverse the trend
     } else if(newPipeY <= -120){
         newPipeY = -120; // bound to the max
