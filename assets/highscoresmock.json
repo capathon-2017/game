@@ -1,45 +1,166 @@
-{
-	"highscores": [
-		{
-			"user": "Olivier Van Paljas",
-			"score": 123456
-		},
-		{
-			"user": "PJ",
-			"score": 123456
-		},
-		{
-			"user": "Daan",
-			"score": 123456
-		},
-		{
-			"user": "Kristiaan",
-			"score": 123456
-		},
-		{
-			"user": "Marijn",
-			"score": 123456,
-			"currentUser": true
-		},
-		{
-			"user": "Thomas V W",
-			"score": 12345
-		},
-		{
-			"user": "Thomas V D",
-			"score": 1234
-		},
-		{
-			"user": "Jeroen",
-			"score": 123
-		},
-		{
-			"user": "Rob",
-			"score": 12
-		},
-		{
-			"user": "Jerre",
-			"score": 0
-		}
-	]
-}
+[
+    {
+        "_id": "589efb6e84f68824fc497b36",
+        "name": "PJ",
+        "img": "/images/pj.jpg",
+        "location": "Onbekend",
+        "skills": {
+            "java": 2,
+            "scrum": 5,
+            "managen": 3
+        },
+        "age": 50,
+        "highscore": 15,
+        "certifications": [
+            "Java OCA",
+            "Certified Manager"
+        ],
+        "motivationLetter": "Please hire me",
+        "extraCarreerActivities": "None",
+        "carreerExpierence": "Something something at Argenta"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b38",
+        "name": "Daan",
+        "img": "/images/daan.jpg",
+        "location": "Parijs",
+        "skills": {
+            "java": 2,
+            "scrum": 3,
+            "Frans": 5
+        },
+        "age": 25,
+        "highscore": 14,
+        "certifications": [
+            "Java OCA",
+            "Backbase pro"
+        ],
+        "motivationLetter": "I will work hard",
+        "extraCarreerActivities": "Hatsen in het weekend",
+        "carreerExpierence": "Crewmember bij McDonalds"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b37",
+        "name": "Karin",
+        "img": "/images/karin.jpg",
+        "location": "De Nederlanden",
+        "skills": {
+            "java": 4,
+            "scrum": 4,
+            "Nederlands": 5
+        },
+        "age": 18,
+        "highscore": 13,
+        "certifications": [
+            "Java OCA",
+            "Certified Manager",
+            "Scrum Master"
+        ],
+        "motivationLetter": "I want to work in Belgium, so much nicer there",
+        "extraCarreerActivities": "Ambassador for VZW Kinderdorpen",
+        "carreerExpierence": "Internship at Google"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b3a",
+        "name": "Jeroen",
+        "img": "/images/jeroen.jpg",
+        "location": "Belgie",
+        "skills": {
+            "dotnet": 2,
+            "scrum": 3,
+            "networking": 2
+        },
+        "age": 27,
+        "highscore": 13,
+        "certifications": [
+            "Oracle Expert",
+            "Certified paljaske",
+            "Guiter hero semi-pro"
+        ],
+        "motivationLetter": "I will work for money",
+        "extraCarreerActivities": "Hacken in het weekend en in de week",
+        "carreerExpierence": "Argenta"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b39",
+        "name": "Marijn",
+        "img": "/images/other.jpg",
+        "location": "Belgie",
+        "skills": {
+            "dotnet": 2,
+            "scrum": 3,
+            "networking": 2
+        },
+        "age": 26,
+        "highscore": 11,
+        "certifications": [
+            "Oracle Expert",
+            "Certified paljaske",
+            "Guiter hero semi-pro"
+        ],
+        "motivationLetter": "I will do everything for money",
+        "extraCarreerActivities": "Hatsen in het weekend/ in de week",
+        "carreerExpierence": "Short time CEO of Google"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b35",
+        "name": "Thomas Vandebiere",
+        "img": "/images/thomas.jpg",
+        "location": "Leuven",
+        "skills": {
+            "java": 4,
+            "runescape": 5,
+            "drinken": 4
+        },
+        "age": 23,
+        "highscore": 10,
+        "certifications": [
+            "Java OCA",
+            "Backbase Backend"
+        ],
+        "motivationLetter": "I am looking for a nice job",
+        "extraCarreerActivities": "None",
+        "carreerExpierence": "Benchlife at Capgemini"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b3b",
+        "name": "Rob",
+        "img": "/images/rob.jpg",
+        "location": "Belgie",
+        "skills": {
+            "dotnet": 2,
+            "scrum": 3,
+            "networking": 2
+        },
+        "age": 27,
+        "highscore": 7,
+        "certifications": [
+            "Oracle Expert",
+            "Certified paljaske",
+            "Guiter hero semi-pro"
+        ],
+        "motivationLetter": "I will work for money",
+        "extraCarreerActivities": "Spelen met google home",
+        "carreerExpierence": "Argenta"
+    },
+    {
+        "_id": "589efb6e84f68824fc497b34",
+        "name": "Olivier Van Paljas",
+        "img": "/images/olivier.jpg",
+        "location": "Antwerp",
+        "certifications": [
+            "Java OCA",
+            "Backbase Backend"
+        ],
+        "age": 23,
+        "highscore": 3,
+        "skills": {
+            "java": 4,
+            "scrum": 3,
+            "networking": 2
+        },
+        "motivationLetter": "I want to work",
+        "extraCarreerActivities": "Helping the homeless",
+        "carreerExpierence": "5 years at BNP Paribas as Java developper"
+    }
+]

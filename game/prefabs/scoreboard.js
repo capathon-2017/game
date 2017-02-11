@@ -25,9 +25,9 @@ Scoreboard.prototype.constructor = Scoreboard;
 
 Scoreboard.prototype.show = function(score) {
 
-    this.makeRequest("http://192.168.101.223:3000/questions");
+    this.makeRequest("http://192.168.1.2:3000/questions");
 
-    this.style = { font: "20px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
+    this.style = { font: "15px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
 
     this.topMargin = this.scoreboard.height - 70;
     this.leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 10;
@@ -90,12 +90,12 @@ Scoreboard.prototype.pointsForDifficulty = function (difficulty) {
 };
 Scoreboard.prototype.makeTextBold = function (item) {
    item.fontWeight = "bold";
-   item.fontSize = 20;
+   item.fontSize = 15;
    item.font = "Arial";
 };
 Scoreboard.prototype.makeTextNormal = function (item) {
    item.fontWeight = "normal";
-   item.fontSize = 20;
+   item.fontSize = 15;
    item.font = "Arial";
 };
 Scoreboard.prototype.resumeGame = function() {
@@ -127,7 +127,7 @@ Scoreboard.prototype.processQuestions = function () {
     if (httpRequest.status === 200) {
       scoreboardContext.addQuestions(httpRequest.responseText);
     } else {
-      scoreboardContext.addQuestions(scoreboardContext.game.cache._cache.json.questions.data);
+      scoreboardContext.addQuestions(JSON.stringify(scoreboardContext.game.cache._cache.json.questions.data));
     }
   }
 }
@@ -139,15 +139,16 @@ Scoreboard.prototype.addQuestions = function (questions) {
     for(var i = 0; i < parseJson.length; i++) {
       questionsArray.push(parseJson[i].question);
     }
+
     var question = questionsArray[this.game.rnd.integerInRange(0, questionsArray.length -1)];
 
-    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.1) - this.topMargin, question.text, this.style);
+    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 1.5) - this.topMargin, question.text, this.style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 1.8 - (i * 0.20);
+        var offset = 1.8 - (i * 0.15);
         this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
         this.answers[i].inputEnabled = true;
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});

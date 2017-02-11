@@ -115,11 +115,16 @@ module.exports = Ground;
 },{}],4:[function(require,module,exports){
 'use strict';
 
+
+var highscoreContext;
+
 var Highscore = function(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
 	this.highscore = this.create(this.game.width - 400, 250, 'highscore');
 	this.highscore.anchor.setTo(0.5, 0.5); 
+	highscoreContext = this;
+	this.httpRequest;
 
 	this.highscores = this.game.cache._cache.json.highscores.data.highscores;
 
@@ -136,19 +141,9 @@ Highscore.prototype.show = function(context) {
 	this.topMargin = context.highscore.height - 70;
     this.leftMargin = 220;
     this.scores = [];
+    this.makeRequest("http://192.168.1.2:3000/highscores");
 
-	for(var i = 0; i < this.highscores.length; i++) {
-		var offset = 2.1 - (i * 0.20);
-		var text = this.highscores[i].user + ": " + this.highscores[i].score;
-		if(i > 0) {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
-		}
-		else {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
-		}
-	}
-
-	 this.game.add.button(this.leftMargin + 130, this.game.height - 100, 'endButton', this.end, this);
+	this.game.add.button(this.leftMargin + 130, this.game.height - 100, 'endButton', this.end, this);
 
     this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 };
@@ -165,6 +160,42 @@ Highscore.prototype.makeTextNormal = function (item) {
 Highscore.prototype.end = function () {
 	this.context.score = undefined;
 	this.context.resetGame();
+}
+Highscore.prototype.makeRequest = function (url) {
+    this.httpRequest = new XMLHttpRequest();
+
+    if (!this.httpRequest) {
+        this.questions = this.game.cache._cache.json.questions.data;
+    }
+    else {
+        this.httpRequest.onreadystatechange = this.processHighscores;
+        this.httpRequest.open('GET', url);
+        this.httpRequest.send();
+    }
+}
+Highscore.prototype.processHighscores = function () {
+  var httpRequest = this;
+  if (httpRequest.readyState === XMLHttpRequest.DONE) {
+    if (httpRequest.status === 200) {
+      highscoreContext.addHighscores(httpRequest.responseText);
+    } else {
+      highscoreContext.addHighscores(highscoreContext.game.cache._cache.json.highscores.data.highscores);
+    }
+  }
+}
+Highscore.prototype.addHighscores = function (highscores) {
+    var parseJson = JSON.parse(highscores);
+    
+    for(var i = 0; i < parseJson.length; i++) {
+		var offset = 2.1 - (i * 0.20);
+		var text = parseJson[i].name + ": " + parseJson[i].highscore;
+		if(i > 0) {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
+		}
+		else {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
+		}
+	}
 }
 module.exports = Highscore;
 
@@ -200,7 +231,7 @@ var PipeGroup = function(game, parent, speed) {
   Phaser.Group.call(this, game, parent);
 
   this.topPipe = new Pipe(this.game, 0, -50, 1);
-  this.bottomPipe = new Pipe(this.game, 0, 610, 0);
+  this.bottomPipe = new Pipe(this.game, 0, 620, 0);
   this.add(this.topPipe);
   this.add(this.bottomPipe);
   this.hasScored = false;
@@ -222,9 +253,9 @@ PipeGroup.prototype.checkWorldBounds = function() {
 };
 
 PipeGroup.prototype.reset = function(x, y, difficulty, speed) {
-  var tightenCave = Math.min(3*difficulty,150);
+  var tightenCave = Math.min(3*difficulty,80);
   this.topPipe.reset(0,-50);
-  this.bottomPipe.reset(0,610-tightenCave);
+  this.bottomPipe.reset(0,620-tightenCave);
   this.x = x;
   this.y = y;
   this.setAll('body.velocity.x', speed);
@@ -271,9 +302,9 @@ Scoreboard.prototype.constructor = Scoreboard;
 
 Scoreboard.prototype.show = function(score) {
 
-    this.makeRequest("http://192.168.101.223:3000/questions");
+    this.makeRequest("http://192.168.1.2:3000/questions");
 
-    this.style = { font: "20px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
+    this.style = { font: "15px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
 
     this.topMargin = this.scoreboard.height - 70;
     this.leftMargin = (this.game.width - (this.scoreboard.width * 1.5)) + 10;
@@ -289,10 +320,12 @@ Scoreboard.prototype.answerClicked = function () {
     }
 
     var result;
+    var points = 0;
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
                 this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
+                points = this.context.pointsForDifficulty(this.question.difficulty);
                 result = true;
             }
             else {
@@ -308,7 +341,7 @@ Scoreboard.prototype.answerClicked = function () {
     var leftMargin = this.context.leftMargin + 150;
 
     if(result) {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, this);
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, { "newContext": this, "points": points});
     }
     else {
         this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
@@ -316,18 +349,34 @@ Scoreboard.prototype.answerClicked = function () {
     }
 
 };
+Scoreboard.prototype.pointsForDifficulty = function (difficulty) {
+  var points = 0;
+  if(difficulty == "very easy"){
+    points = 50;
+  }
+  else if(difficulty == "easy"){
+    points = 100;
+  }
+  else if(difficulty == "though"){
+    points = 250;
+  }
+  else if(difficulty == "very though"){
+    points = 500;
+  }
+  return points;
+};
 Scoreboard.prototype.makeTextBold = function (item) {
    item.fontWeight = "bold";
-   item.fontSize = 20;
+   item.fontSize = 15;
    item.font = "Arial";
 };
 Scoreboard.prototype.makeTextNormal = function (item) {
    item.fontWeight = "normal";
-   item.fontSize = 20;
+   item.fontSize = 15;
    item.font = "Arial";
 };
 Scoreboard.prototype.resumeGame = function() {
-    this.context.mainHandler.resetGame();
+    this.newContext.context.mainHandler.resetGame(this.points);
 };
 Scoreboard.prototype.exitGame = function() {
     this.context.mainHandler.scoreboard.visible = false;
@@ -355,7 +404,7 @@ Scoreboard.prototype.processQuestions = function () {
     if (httpRequest.status === 200) {
       scoreboardContext.addQuestions(httpRequest.responseText);
     } else {
-      scoreboardContext.addQuestions(scoreboardContext.game.cache._cache.json.questions.data);
+      scoreboardContext.addQuestions(JSON.stringify(scoreboardContext.game.cache._cache.json.questions.data));
     }
   }
 }
@@ -367,15 +416,16 @@ Scoreboard.prototype.addQuestions = function (questions) {
     for(var i = 0; i < parseJson.length; i++) {
       questionsArray.push(parseJson[i].question);
     }
+
     var question = questionsArray[this.game.rnd.integerInRange(0, questionsArray.length -1)];
 
-    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.1) - this.topMargin, question.text, this.style);
+    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 1.5) - this.topMargin, question.text, this.style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 1.8 - (i * 0.20);
+        var offset = 1.8 - (i * 0.15);
         this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
         this.answers[i].inputEnabled = true;
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});
@@ -604,7 +654,7 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    this.difficultyLevel = Math.min(50,(Math.floor(this.score/30))); //max level is 50
+    this.difficultyLevel = Math.min(70,(Math.floor(this.score/50))); //max level is 50
     // Difficulty decides on max slope
     var maxVar = this.calculateMaxVar(this.score, this.difficultyLevel);
 
@@ -634,7 +684,7 @@ Play.prototype = {
     pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.game.speed);
 
 
-    if(this.pipes.length > 100){
+    if(this.pipes.length > 100){ 
         var pipeGroup = this.pipes.getFirstExists(false);
         if(pipeGroup){
             pipeGroup.destroy();
@@ -648,10 +698,13 @@ Play.prototype = {
   },
 
   calculateMaxVar: function(current_score, difficulty){
-    var maxVar = 100+20*(difficulty);
+    var maxVar = 100+10*(difficulty);
     return maxVar;
   },
-  resetGame: function () {
+  resetGame: function (addScore) {
+    if(addScore){
+        this.score = this.score + addScore;
+    }
     this.create();
     this.startGame();
     //this.pipes.destroy();
