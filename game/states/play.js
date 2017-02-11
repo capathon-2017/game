@@ -62,9 +62,10 @@ Play.prototype = {
 
     this.previousCenter = 0;
     this.changeY = 0;
-
+    this.difficultyLevel = 0;
 
   },
+
   update: function() {
     // not enable collisions between the bird and the ground
     // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
@@ -73,7 +74,7 @@ Play.prototype = {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
-            // this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
+            this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
   },
@@ -119,8 +120,9 @@ Play.prototype = {
 
   },
   generatePipes: function() {
+    this.difficultyLevel = Math.min(50,(Math.floor(this.score/25))); //max level is 50
     // Difficulty decides on max slope
-    var maxVar = this.calculateMaxVar(this.score);
+    var maxVar = this.calculateMaxVar(this.score, this.difficultyLevel);
 
     // Random slope calculation
     var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
@@ -130,19 +132,21 @@ Play.prototype = {
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    if(newPipeY >= 140 || newPipeY <= -140){
-        newPipeY = Math.sign(newPipeY)*140; // bound to the max 
-        trend = Math.sign(newPipeY)*-5; //reverse the trend
-    }    
-
+    console.log("newPipeY: " + newPipeY);
+    if(newPipeY >= 100) {
+        newPipeY = 100; // bound to the max 
+        trend = -5; //reverse the trend
+    } else if(newPipeY <= -120){
+        newPipeY = -120; // bound to the max 
+        trend = 5; //reverse the trend
+    }
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
-    console.log("Size pipes: " + this.pipes.length);
     //this.pipes.foreach()
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes);  
     }
-    pipeGroup.reset(this.game.width, newPipeY);    
+    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel);    
 
     if(this.pipes.length > 100){
         var pipeGroup = this.pipes.getFirstExists(false);
@@ -157,9 +161,8 @@ Play.prototype = {
 
   },
 
-  calculateMaxVar: function(current_score){
-    var maxVar = 10*(1+(Math.floor(current_score%100.0)));
-    console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+  calculateMaxVar: function(current_score, difficulty){
+    var maxVar = 100+20*(difficulty);
     return maxVar;
   },
   resetGame: function () {
