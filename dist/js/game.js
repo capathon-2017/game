@@ -205,10 +205,10 @@ Highscore.prototype.addHighscores = function (highscores) {
 		var text;
 		text = parseJson[i].name + ": " + parseJson[i].highscore;
 		if(i > 0) {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.context.style);
 		}
 		else {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.context.style);
 		}
 	}
 }
@@ -339,14 +339,14 @@ Scoreboard.prototype.answerClicked = function () {
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Yes, thats correct", this.style);
+                this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Yes, thats correct", this.context.style);
                 points = this.context.pointsForDifficulty(this.question.difficulty);
                 result = true;
             }
             else {
-                this.firstLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Sorry thats the wrong answer", this.style);
-                this.secondLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 40), "The right answer was:", this.style);
-                this.thirdLine = this.context.game.add.text(this.context.leftMargin + 210, (this.context.game.height / 1.4) - (this.context.topMargin - 70), this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 10), "Sorry thats the wrong answer", this.context.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 40), "The right answer was:", this.context.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin + 230, (this.context.game.height / 1.4) - (this.context.topMargin - 70), this.question.options[this.question.correct], this.context.style);
                 result = false;
             }
         }

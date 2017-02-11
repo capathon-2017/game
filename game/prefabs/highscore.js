@@ -90,10 +90,10 @@ Highscore.prototype.addHighscores = function (highscores) {
 		var text;
 		text = parseJson[i].name + ": " + parseJson[i].highscore;
 		if(i > 0) {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.context.style);
 		}
 		else {
-			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.context.style);
 		}
 	}
 }
