@@ -8,6 +8,23 @@
   <link href="css/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+  <div id="login_form" class="login_form">
+	<h1> Please login first! </h1>
+	<form>
+	  Candidate: <input type="text" name="name"><br>
+	  Password: <input type="text" name="pass">
+	</form>
+	<button id="button" type="submit" form="login_form" value="Submit">Submit</button>
+  </div>
+  <script type="text/javascript">
+  	var button = document.getElementById('button'); // Assumes element with id='button'
+	button.onclick = function() {
+    var div = document.getElementById('login_form');
+    if (div.style.display !== 'none') {
+        div.style.display = 'none';
+    	}
+    };
+  </script>
   <div id="wildcard"></div>
   <script src="js/phaser.js"></script>
   <script src="js/game.js"></script>
