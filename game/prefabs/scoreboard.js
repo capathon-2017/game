@@ -61,7 +61,7 @@ Scoreboard.prototype.answerClicked = function () {
                 this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
                 result = true;
             }
-            else { 
+            else {
                 this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
                 this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.9) - this.context.topMargin, "The right answer was:", this.style);
                 this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.7) - this.context.topMargin, this.question.options[this.question.correct], this.style);
@@ -78,7 +78,8 @@ Scoreboard.prototype.answerClicked = function () {
     }
     else {
         this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
-    } 
+        this.context.game.speed = -200;
+    }
 
 };
 Scoreboard.prototype.makeTextBold = function (item) {

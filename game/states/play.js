@@ -64,8 +64,7 @@ Play.prototype = {
     this.previousCenter = 0;
     this.changeY = 0;
     this.difficultyLevel = 0;
-    this.speedUpdater = null;
-    this.speed = -200;
+    this.game.speedUpdater = null;
 
   },
 
@@ -92,11 +91,11 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.speed), this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.game.speed), this.generatePipes, this);
         this.pipeGenerator.timer.start();
 
-        this.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
-        this.speedUpdater.timer.start();
+        this.game.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
+        this.game.speedUpdater.timer.start();
 
         this.instructionGroup.destroy();
     }
@@ -144,10 +143,10 @@ Play.prototype = {
     var newPipeY = this.previousCenter + this.changeY;
 
     if(newPipeY >= 100) {
-        newPipeY = 100; // bound to the max 
+        newPipeY = 100; // bound to the max
         trend = -5; //reverse the trend
     } else if(newPipeY <= -120){
-        newPipeY = -120; // bound to the max 
+        newPipeY = -120; // bound to the max
         trend = 5; //reverse the trend
     }
 
@@ -155,9 +154,9 @@ Play.prototype = {
     var pipeGroup = this.pipes.getFirstExists(false);
     //this.pipes.foreach()
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
+        pipeGroup = new PipeGroup(this.game, this.pipes, this.game.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.speed);    
+    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.game.speed);
 
 
     if(this.pipes.length > 100){
@@ -183,10 +182,10 @@ Play.prototype = {
     //this.pipes.destroy();
   },
   updateSpeed: function() {
-    this.speed -= 10;
-    console.log('speed: ' + this.speed);
-    this.pipes.callAll('updateSpeed', null, this.speed);
-    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.speed);
+    this.game.speed -= 10;
+    console.log('speed: ' + this.game.speed);
+    this.pipes.callAll('updateSpeed', null, this.game.speed);
+    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.game.speed);
   }
 };
 
