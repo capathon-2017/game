@@ -183,12 +183,27 @@ Highscore.prototype.processHighscores = function () {
     }
   }
 }
+Highscore.prototype.sortHighscores = function (a,b) {
+	  if (a.highscore > b.highscore){
+	  	return -1;
+	  }
+	  if (a.highscore < b.highscore) {
+	  	return 1;
+	  }
+	  return 0;
+}
 Highscore.prototype.addHighscores = function (highscores) {
     var parseJson = JSON.parse(highscores);
     
     for(var i = 0; i < parseJson.length; i++) {
-		var offset = 2.1 - (i * 0.20);
-		var text = parseJson[i].name + ": " + parseJson[i].highscore;
+		if(parseJson[i].name === "Karin") {
+			parseJson[i].highscore = this.context.score;
+		}
+	}
+	parseJson.sort(this.sortHighscores);
+	for(var i = 0; i < parseJson.length; i++) {
+		var text;
+		text = parseJson[i].name + ": " + parseJson[i].highscore;
 		if(i > 0) {
 			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
 		}
