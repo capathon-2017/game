@@ -3,7 +3,7 @@
 var Highscore = function(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
-	this.highscore = this.create(this.game.width - 400, 300, 'highscore');
+	this.highscore = this.create(this.game.width - 400, 250, 'highscore');
 	this.highscore.anchor.setTo(0.5, 0.5); 
 
 	this.highscores = this.game.cache._cache.json.highscores.data.highscores;
@@ -33,7 +33,7 @@ Highscore.prototype.show = function(context) {
 		}
 	}
 
-	 this.game.add.button(this.leftMargin + 130, this.game.width - 350, 'startButton', this.end, this);
+	 this.game.add.button(this.leftMargin + 130, this.game.height - 100, 'endButton', this.end, this);
 
     this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 };
@@ -48,6 +48,7 @@ Highscore.prototype.makeTextNormal = function (item) {
    item.font = "Arial";
 };
 Highscore.prototype.end = function () {
+	this.context.score = undefined;
 	this.context.resetGame();
 }
 module.exports = Highscore;

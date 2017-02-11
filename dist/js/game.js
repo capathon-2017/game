@@ -118,10 +118,10 @@ module.exports = Ground;
 var Highscore = function(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
-	this.highscore = this.create(this.game.width - 400, 300, 'highscore');
+	this.highscore = this.create(this.game.width - 400, 250, 'highscore');
 	this.highscore.anchor.setTo(0.5, 0.5); 
 
-	this.highscores = this.game.cache._json.highscores.data.highscores;
+	this.highscores = this.game.cache._cache.json.highscores.data.highscores;
 
 	this.y = this.game.height;
 	this.x = 0;
@@ -132,6 +132,7 @@ Highscore.prototype.constructor = Highscore;
 
 Highscore.prototype.show = function(context) {
 	context.highscore.visible = true;
+	this.context = context;
 	this.topMargin = context.highscore.height - 70;
     this.leftMargin = 220;
     this.scores = [];
@@ -147,7 +148,7 @@ Highscore.prototype.show = function(context) {
 		}
 	}
 
-	 this.game.add.button(this.leftMargin + 130, this.game.width - 350, 'startButton', this.end, this);
+	 this.game.add.button(this.leftMargin + 130, this.game.height - 100, 'endButton', this.end, this);
 
     this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
 };
@@ -162,7 +163,8 @@ Highscore.prototype.makeTextNormal = function (item) {
    item.font = "Arial";
 };
 Highscore.prototype.end = function () {
-	debugger;
+	this.context.score = undefined;
+	this.context.resetGame();
 }
 module.exports = Highscore;
 
@@ -197,8 +199,8 @@ var PipeGroup = function(game, parent, speed) {
 
   Phaser.Group.call(this, game, parent);
 
-  this.topPipe = new Pipe(this.game, 0, 0, 0);
-  this.bottomPipe = new Pipe(this.game, 0, 520, 1);
+  this.topPipe = new Pipe(this.game, 0, -50, 1);
+  this.bottomPipe = new Pipe(this.game, 0, 610, 0);
   this.add(this.topPipe);
   this.add(this.bottomPipe);
   this.hasScored = false;
@@ -219,9 +221,10 @@ PipeGroup.prototype.checkWorldBounds = function() {
   }
 };
 
-PipeGroup.prototype.reset = function(x, y, speed) {
-  this.topPipe.reset(0,0);
-  this.bottomPipe.reset(0,520);
+PipeGroup.prototype.reset = function(x, y, difficulty, speed) {
+  var tightenCave = Math.min(3*difficulty,150);
+  this.topPipe.reset(0,-50);
+  this.bottomPipe.reset(0,610-tightenCave);
   this.x = x;
   this.y = y;
   this.setAll('body.velocity.x', speed);
@@ -252,8 +255,7 @@ var Scoreboard = function(game, mainHandler) {
   this.game = game;
   this.mainHandler = mainHandler;
 
-  this.questions = this.game.cache._json.questions.data;
-
+  this.questions = this.game.cache._cache.json.questions.data;
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
 
@@ -273,13 +275,13 @@ Scoreboard.prototype.show = function(score) {
 
     var question = this.questions.question;
 
-    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.4) - this.topMargin, question.text, this.style);
+    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.1) - this.topMargin, question.text, this.style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 2.1 - (i * 0.20);
+        var offset = 1.8 - (i * 0.20);
         this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
         this.answers[i].inputEnabled = true;
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});
@@ -302,13 +304,13 @@ Scoreboard.prototype.answerClicked = function () {
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Yes, thats correct", this.style);
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
                 result = true;
             }
             else { 
-                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
-                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.9) - this.context.topMargin, "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.7) - this.context.topMargin, this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
@@ -318,10 +320,10 @@ Scoreboard.prototype.answerClicked = function () {
     var leftMargin = this.context.leftMargin + 150;
 
     if(result) {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, this);
     }
     else {
-        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
     } 
 
 };
@@ -497,11 +499,12 @@ Play.prototype = {
 
     this.previousCenter = 0;
     this.changeY = 0;
-
+    this.difficultyLevel = 0;
     this.speedUpdater = null;
     this.speed = -200;
 
   },
+
   update: function() {
     // not enable collisions between the bird and the ground
     // this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
@@ -510,7 +513,7 @@ Play.prototype = {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
-            // this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
+            this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
   },
@@ -558,13 +561,14 @@ Play.prototype = {
         this.bird.kill();
         this.pipes.callAll('stop');
         this.pipeGenerator.timer.stop();
-        this.ground.stopScroll();
+        // this.ground.stopScroll();
     }
 
   },
   generatePipes: function() {
+    this.difficultyLevel = Math.min(50,(Math.floor(this.score/30))); //max level is 50
     // Difficulty decides on max slope
-    var maxVar = this.calculateMaxVar(this.score);
+    var maxVar = this.calculateMaxVar(this.score, this.difficultyLevel);
 
     // Random slope calculation
     var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
@@ -574,19 +578,23 @@ Play.prototype = {
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    if(newPipeY >= 140 || newPipeY <= -140){
-        newPipeY = Math.sign(newPipeY)*140; // bound to the max
-        trend = Math.sign(newPipeY)*-5; //reverse the trend
+
+    if(newPipeY >= 100) {
+        newPipeY = 100; // bound to the max 
+        trend = -5; //reverse the trend
+    } else if(newPipeY <= -120){
+        newPipeY = -120; // bound to the max 
+        trend = 5; //reverse the trend
     }
 
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
-    console.log("Size pipes: " + this.pipes.length);
     //this.pipes.foreach()
     if(!pipeGroup) {
         pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY, this.speed);
+    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.speed);    
+
 
     if(this.pipes.length > 100){
         var pipeGroup = this.pipes.getFirstExists(false);
@@ -601,15 +609,14 @@ Play.prototype = {
 
   },
 
-  calculateMaxVar: function(current_score){
-    var maxVar = 10*(1+(Math.floor(current_score%100.0)));
-    console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+  calculateMaxVar: function(current_score, difficulty){
+    var maxVar = 100+20*(difficulty);
     return maxVar;
   },
   resetGame: function () {
     this.create();
     this.startGame();
-    this.pipes.destroy();
+    //this.pipes.destroy();
   },
   updateSpeed: function() {
     this.speed -= 10;
@@ -639,16 +646,21 @@ Preload.prototype = {
     this.load.image('ground', 'assets/ground.png');
     this.load.image('title', 'assets/title.png');
     this.load.spritesheet('bird', 'assets/bat.png', 44,28,3);
-    this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
-    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 108,320,2);
+    // this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
+    this.load.spritesheet('pipe', 'assets/pipes.png', 108,320,2);
+
+    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 74,400,2);
     this.load.image('startButton', 'assets/start-button.png');
 
     this.load.image('instructions', 'assets/instructions.png');
-    this.load.image('getReady', 'assets/get-ready.png');
+    this.load.image('getReady', 'assets/get-ready_new.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
-    this.load.image('highscore', 'assets/highscore.png');
     this.load.image('particle', 'assets/particle.png');
+    this.load.image('highscore', 'assets/highscore.png');
+    this.load.image('continueButton', 'assets/continue-button.png');
+    this.load.image('endButton', 'assets/end-button.png');
+
 
     this.load.audio('flap', 'assets/flap.wav');
     this.load.audio('pipeHit', 'assets/pipe-hit.wav');

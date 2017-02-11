@@ -29,13 +29,13 @@ Scoreboard.prototype.show = function(score) {
 
     var question = this.questions.question;
 
-    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.4) - this.topMargin, question.text, this.style);
+    this.questionText = this.game.add.text(this.leftMargin, (this.game.height / 2.1) - this.topMargin, question.text, this.style);
     this.add(this.questionText);
 
     this.answers = [];
 
     for(var i = 0; i < question.options.length; i++) {
-        var offset = 2.1 - (i * 0.20);
+        var offset = 1.8 - (i * 0.20);
         this.answers[i] = this.game.add.text(this.leftMargin, (this.game.height / offset) - this.topMargin, question.options[i], this.style);
         this.answers[i].inputEnabled = true;
         this.answers[i].events.onInputDown.add(this.answerClicked, { "answer": this.answers[i], "question": question, "context": this});
@@ -58,13 +58,13 @@ Scoreboard.prototype.answerClicked = function () {
     for(var i = 0; i < this.question.options.length; i++) {
         if(this.answer.text === this.question.options[i]) {
             if(i == this.question.correct) {
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Yes, thats correct", this.style);
+                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
                 result = true;
             }
             else { 
-                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
-                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.9) - this.context.topMargin, "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.7) - this.context.topMargin, this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
@@ -74,10 +74,10 @@ Scoreboard.prototype.answerClicked = function () {
     var leftMargin = this.context.leftMargin + 150;
 
     if(result) {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
+        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'continueButton', this.context.resumeGame, this);
     }
     else {
-        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
     } 
 
 };
