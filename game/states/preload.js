@@ -1,4 +1,3 @@
-
 'use strict';
 function Preload() {
   this.asset = null;
@@ -15,7 +14,8 @@ Preload.prototype = {
     this.load.image('background', 'assets/background_blue.png');
     this.load.image('ground', 'assets/ground.png');
     this.load.image('title', 'assets/title.png');
-    this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
+    this.load.spritesheet('bird', 'assets/bat.png', 44,28,3);
+    // this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
     this.load.spritesheet('pipe', 'assets/pipes.png', 108,320,2);
 
     this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 74,400,2);

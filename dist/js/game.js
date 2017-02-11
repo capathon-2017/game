@@ -7,7 +7,7 @@ var MenuState = require('./states/menu');
 var PlayState = require('./states/play');
 var PreloadState = require('./states/preload');
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'wildcard');
+var game = new Phaser.Game(800, 500, Phaser.AUTO, 'wildcard');
 
 // Game States
 game.state.add('boot', BootState);
@@ -19,7 +19,7 @@ game.state.add('preload', PreloadState);
 game.state.start('boot');
 
   
-},{"./states/boot":7,"./states/menu":8,"./states/play":9,"./states/preload":10}],2:[function(require,module,exports){
+},{"./states/boot":8,"./states/menu":9,"./states/play":10,"./states/preload":11}],2:[function(require,module,exports){
 'use strict';
 
 var Bird = function(game, x, y, frame) {
@@ -115,6 +115,60 @@ module.exports = Ground;
 },{}],4:[function(require,module,exports){
 'use strict';
 
+var Highscore = function(game) {
+	Phaser.Group.call(this, game);
+	this.game = game;
+	this.highscore = this.create(this.game.width - 400, 300, 'highscore');
+	this.highscore.anchor.setTo(0.5, 0.5); 
+
+	this.highscores = this.game.cache._json.highscores.data.highscores;
+
+	this.y = this.game.height;
+	this.x = 0;
+};
+
+Highscore.prototype = Object.create(Phaser.Group.prototype);
+Highscore.prototype.constructor = Highscore;
+
+Highscore.prototype.show = function(context) {
+	context.highscore.visible = true;
+	this.topMargin = context.highscore.height - 70;
+    this.leftMargin = 220;
+    this.scores = [];
+
+	for(var i = 0; i < this.highscores.length; i++) {
+		var offset = 2.1 - (i * 0.20);
+		var text = this.highscores[i].user + ": " + this.highscores[i].score;
+		if(i > 0) {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 720 + (25 * i), text, this.style);
+		}
+		else {
+			this.scores[i] = this.game.add.text(this.leftMargin, this.game.width - 725, text, this.style);
+		}
+	}
+
+	 this.game.add.button(this.leftMargin + 130, this.game.width - 350, 'startButton', this.end, this);
+
+    this.game.add.tween(this).to({y: 0}, 1000, Phaser.Easing.Bounce.Out, true);
+};
+Highscore.prototype.makeTextBold = function (item) {
+   item.fontWeight = "bold";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
+Highscore.prototype.makeTextNormal = function (item) {
+   item.fontWeight = "normal";
+   item.fontSize = 20;
+   item.font = "Arial";
+};
+Highscore.prototype.end = function () {
+	debugger;
+}
+module.exports = Highscore;
+
+},{}],5:[function(require,module,exports){
+'use strict';
+
 var Pipe = function(game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'ground_pipe', frame);
   this.anchor.setTo(0.5, 0.5);
@@ -134,12 +188,12 @@ Pipe.prototype.update = function() {
 };
 
 module.exports = Pipe;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var Pipe = require('./pipe');
 
-var PipeGroup = function(game, parent) {
+var PipeGroup = function(game, parent, speed) {
 
   Phaser.Group.call(this, game, parent);
 
@@ -149,14 +203,14 @@ var PipeGroup = function(game, parent) {
   this.add(this.bottomPipe);
   this.hasScored = false;
 
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
 };
 
 PipeGroup.prototype = Object.create(Phaser.Group.prototype);
 PipeGroup.prototype.constructor = PipeGroup;
 
 PipeGroup.prototype.update = function() {
-  this.checkWorldBounds(); 
+  this.checkWorldBounds();
 };
 
 PipeGroup.prototype.checkWorldBounds = function() {
@@ -165,12 +219,12 @@ PipeGroup.prototype.checkWorldBounds = function() {
   }
 };
 
-PipeGroup.prototype.reset = function(x, y) {
+PipeGroup.prototype.reset = function(x, y, speed) {
   this.topPipe.reset(0,0);
   this.bottomPipe.reset(0,520);
   this.x = x;
   this.y = y;
-  this.setAll('body.velocity.x', -200);
+  this.setAll('body.velocity.x', speed);
   this.hasScored = false;
   this.exists = true;
 };
@@ -180,8 +234,13 @@ PipeGroup.prototype.stop = function() {
   this.setAll('body.velocity.x', 0);
 };
 
+PipeGroup.prototype.updateSpeed = function(speed) {
+  this.setAll('body.velocity.x', speed);
+}
+
 module.exports = PipeGroup;
-},{"./pipe":4}],6:[function(require,module,exports){
+
+},{"./pipe":5}],7:[function(require,module,exports){
 'use strict';
 
 var Scoreboard = function(game, mainHandler) {
@@ -247,9 +306,9 @@ Scoreboard.prototype.answerClicked = function () {
                 result = true;
             }
             else { 
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
-                this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
+                this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.2) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
+                this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.0) - this.context.topMargin, "The right answer was:", this.style);
+                this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.8) - this.context.topMargin, this.question.options[this.question.correct], this.style);
                 result = false;
             }
         }
@@ -262,8 +321,8 @@ Scoreboard.prototype.answerClicked = function () {
         this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.resumeGame, this);
     }
     else {
-        this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
-    }
+        this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'startButton', this.context.exitGame, this);
+    } 
 
 };
 Scoreboard.prototype.makeTextBold = function (item) {
@@ -280,12 +339,17 @@ Scoreboard.prototype.resumeGame = function() {
     this.context.mainHandler.resetGame();
 };
 Scoreboard.prototype.exitGame = function() {
-    //show highscore
+    this.context.mainHandler.scoreboard.visible = false;
+    this.firstLine.visible = false;
+    this.secondLine.visible = false;
+    this.thirdLine.visible = false;
+    this.continueButton.visible = false;
+    this.context.mainHandler.highscore.show(this.context.mainHandler);
 };
 
 module.exports = Scoreboard;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 'use strict';
 
@@ -304,7 +368,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -319,8 +383,8 @@ Menu.prototype = {
 
     // add the ground sprite as a tile
     // and start scrolling in the negative x direction
-    this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
-    this.ground.autoScroll(-200,0);
+    //this.ground = this.game.add.tileSprite(0,488,1000,112,'ground');
+    //this.ground.autoScroll(-200,0);
 
     /** STEP 1 **/
     // create a group to put the title assets in
@@ -336,18 +400,18 @@ Menu.prototype = {
     /** STEP 3 **/
     // create the bird sprite
     // and add it to the title group
-    this.bird = this.add.sprite(200,5,'bird');
-    this.titleGroup.add(this.bird);
+    //this.bird = this.add.sprite(200,5,'bird');
+    //this.titleGroup.add(this.bird);
 
     /** STEP 4 **/
     // add an animation to the bird
     // and begin the animation
-    this.bird.animations.add('flap');
-    this.bird.animations.play('flap', 12, true);
+    //this.bird.animations.add('flap');
+    //this.bird.animations.play('flap', 12, true);
 
     /** STEP 5 **/
     // Set the originating location of the group
-    this.titleGroup.x = 30;
+    this.titleGroup.x = 275;
     this.titleGroup.y = 100;
 
     /** STEP 6 **/
@@ -367,7 +431,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 'use strict';
 var Bird = require('../prefabs/bird');
@@ -375,6 +439,7 @@ var Ground = require('../prefabs/ground');
 var Pipe = require('../prefabs/pipe');
 var PipeGroup = require('../prefabs/pipeGroup');
 var Scoreboard = require('../prefabs/scoreboard');
+var Highscore = require('../prefabs/highscore');
 
 function Play() {
 }
@@ -398,8 +463,9 @@ Play.prototype = {
     this.game.add.existing(this.bird);
 
     // create and add a new Ground object
-    this.ground = new Ground(this.game, 0, 488, 1000, 112);
-    this.game.add.existing(this.ground);
+    // this.ground = new Ground(this.game, 0, 488, 1000, 112);
+    // this.game.add.existing(this.ground);
+
 
     // add keyboard controls
     this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -417,7 +483,7 @@ Play.prototype = {
 
     this.instructionGroup = this.game.add.group();
     this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 100,'getReady'));
-    this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
+    //this.instructionGroup.add(this.game.add.sprite(this.game.width/2, 325,'instructions'));
     this.instructionGroup.setAll('anchor.x', 0.5);
     this.instructionGroup.setAll('anchor.y', 0.5);
 
@@ -432,6 +498,8 @@ Play.prototype = {
     this.previousCenter = 0;
     this.changeY = 0;
 
+    this.speedUpdater = null;
+    this.speed = -200;
 
   },
   update: function() {
@@ -442,7 +510,7 @@ Play.prototype = {
         // enable collisions between the bird and each group in the pipes group
         this.pipes.forEach(function(pipeGroup) {
             this.checkScore(pipeGroup);
-            this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
+            // this.game.physics.arcade.collide(this.bird, pipeGroup, this.deathHandler, null, this);
         }, this);
     }
   },
@@ -457,8 +525,11 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.1, this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.speed), this.generatePipes, this);
         this.pipeGenerator.timer.start();
+
+        this.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
+        this.speedUpdater.timer.start();
 
         this.instructionGroup.destroy();
     }
@@ -478,6 +549,10 @@ Play.prototype = {
     this.game.add.existing(this.scoreboard);
     this.scoreboard.show(this.score);
 
+    this.highscore = new Highscore(this.game);
+    this.highscore.visible = false;
+    this.game.add.existing(this.highscore);
+
     if(!this.gameover) {
         this.gameover = true;
         this.bird.kill();
@@ -495,43 +570,58 @@ Play.prototype = {
     var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
     var trend = this.changeY + randomChange;
 
-    //Dampen the change 
+    //Dampen the change
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    if(newPipeY >= 250 || newPipeY <= -250){
-        newPipeY = Math.sign(newPipeY)*249; // bound to the max 
+    if(newPipeY >= 140 || newPipeY <= -140){
+        newPipeY = Math.sign(newPipeY)*140; // bound to the max
         trend = Math.sign(newPipeY)*-5; //reverse the trend
-    }    
+    }
 
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
+    console.log("Size pipes: " + this.pipes.length);
+    //this.pipes.foreach()
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);  
+        pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY);    
+    pipeGroup.reset(this.game.width, newPipeY, this.speed);
+
+    if(this.pipes.length > 100){
+        var pipeGroup = this.pipes.getFirstExists(false);
+        if(pipeGroup){
+            pipeGroup.destroy();
+        }
+    }
 
     //Update variables
     this.previousCenter = newPipeY;
-    this.changeY = newChangeY;    
+    this.changeY = newChangeY;
 
   },
 
   calculateMaxVar: function(current_score){
-    var maxVar = 10*(1+(Math.floor(current_score%1000.0)));
-    // console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
+    var maxVar = 10*(1+(Math.floor(current_score%100.0)));
+    console.log('Score in calculateMaxVar: ' + current_score + ' var: ' + maxVar);
     return maxVar;
   },
   resetGame: function () {
     this.create();
     this.startGame();
+    this.pipes.destroy();
+  },
+  updateSpeed: function() {
+    this.speed -= 10;
+    console.log('speed: ' + this.speed);
+    this.pipes.callAll('updateSpeed', null, this.speed);
+    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.speed);
   }
 };
 
 module.exports = Play;
 
-},{"../prefabs/bird":2,"../prefabs/ground":3,"../prefabs/pipe":4,"../prefabs/pipeGroup":5,"../prefabs/scoreboard":6}],10:[function(require,module,exports){
-
+},{"../prefabs/bird":2,"../prefabs/ground":3,"../prefabs/highscore":4,"../prefabs/pipe":5,"../prefabs/pipeGroup":6,"../prefabs/scoreboard":7}],11:[function(require,module,exports){
 'use strict';
 function Preload() {
   this.asset = null;
@@ -545,19 +635,19 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-    this.load.image('background', 'assets/background.png');
+    this.load.image('background', 'assets/background_blue.png');
     this.load.image('ground', 'assets/ground.png');
     this.load.image('title', 'assets/title.png');
-    this.load.spritesheet('bird', 'assets/bird.png', 34,24,3);
+    this.load.spritesheet('bird', 'assets/bat.png', 44,28,3);
     this.load.spritesheet('pipe', 'assets/pipes.png', 54,320,2);
-    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 24,320,2);
+    this.load.spritesheet('ground_pipe', 'assets/ground_pipe.png', 108,320,2);
     this.load.image('startButton', 'assets/start-button.png');
 
     this.load.image('instructions', 'assets/instructions.png');
     this.load.image('getReady', 'assets/get-ready.png');
 
     this.load.image('scoreboard', 'assets/scoreboard.png');
-    this.load.image('answer', 'assets/answer.png');
+    this.load.image('highscore', 'assets/highscore.png');
     this.load.image('particle', 'assets/particle.png');
 
     this.load.audio('flap', 'assets/flap.wav');
@@ -569,6 +659,7 @@ Preload.prototype = {
     this.load.bitmapFont('flappyfont', 'assets/fonts/flappyfont/flappyfont.png', 'assets/fonts/flappyfont/flappyfont.fnt');
 
     this.load.json('questions', 'assets/questions.json');
+    this.load.json('highscores', 'assets/highscoresmock.json');
 
   },
   create: function() {

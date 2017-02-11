@@ -5,6 +5,7 @@ var Ground = require('../prefabs/ground');
 var Pipe = require('../prefabs/pipe');
 var PipeGroup = require('../prefabs/pipeGroup');
 var Scoreboard = require('../prefabs/scoreboard');
+var Highscore = require('../prefabs/highscore');
 
 function Play() {
 }
@@ -63,6 +64,8 @@ Play.prototype = {
     this.previousCenter = 0;
     this.changeY = 0;
     this.difficultyLevel = 0;
+    this.speedUpdater = null;
+    this.speed = -200;
 
   },
 
@@ -89,8 +92,11 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop(Phaser.Timer.SECOND * 0.20, this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.speed), this.generatePipes, this);
         this.pipeGenerator.timer.start();
+
+        this.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
+        this.speedUpdater.timer.start();
 
         this.instructionGroup.destroy();
     }
@@ -110,6 +116,10 @@ Play.prototype = {
     this.game.add.existing(this.scoreboard);
     this.scoreboard.show(this.score);
 
+    this.highscore = new Highscore(this.game);
+    this.highscore.visible = false;
+    this.game.add.existing(this.highscore);
+
     if(!this.gameover) {
         this.gameover = true;
         this.bird.kill();
@@ -120,7 +130,7 @@ Play.prototype = {
 
   },
   generatePipes: function() {
-    this.difficultyLevel = Math.min(50,(Math.floor(this.score/25))); //max level is 50
+    this.difficultyLevel = Math.min(50,(Math.floor(this.score/30))); //max level is 50
     // Difficulty decides on max slope
     var maxVar = this.calculateMaxVar(this.score, this.difficultyLevel);
 
@@ -128,11 +138,11 @@ Play.prototype = {
     var randomChange = this.game.rnd.integerInRange(-maxVar, maxVar);
     var trend = this.changeY + randomChange;
 
-    //Dampen the change 
+    //Dampen the change
     var newChangeY = Math.sign(trend)*Math.sqrt(Math.abs(trend));
 
     var newPipeY = this.previousCenter + this.changeY;
-    console.log("newPipeY: " + newPipeY);
+
     if(newPipeY >= 100) {
         newPipeY = 100; // bound to the max 
         trend = -5; //reverse the trend
@@ -140,13 +150,15 @@ Play.prototype = {
         newPipeY = -120; // bound to the max 
         trend = 5; //reverse the trend
     }
+
     // Garbage collector (from original git)
     var pipeGroup = this.pipes.getFirstExists(false);
     //this.pipes.foreach()
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes);  
+        pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel);    
+    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.speed);    
+
 
     if(this.pipes.length > 100){
         var pipeGroup = this.pipes.getFirstExists(false);
@@ -157,7 +169,7 @@ Play.prototype = {
 
     //Update variables
     this.previousCenter = newPipeY;
-    this.changeY = newChangeY;    
+    this.changeY = newChangeY;
 
   },
 
@@ -168,6 +180,13 @@ Play.prototype = {
   resetGame: function () {
     this.create();
     this.startGame();
+    this.pipes.destroy();
+  },
+  updateSpeed: function() {
+    this.speed -= 10;
+    console.log('speed: ' + this.speed);
+    this.pipes.callAll('updateSpeed', null, this.speed);
+    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.speed);
   }
 };
 

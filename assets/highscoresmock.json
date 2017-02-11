@@ -1,0 +1,45 @@
+{
+	"highscores": [
+		{
+			"user": "Olivier Van Paljas",
+			"score": 123456
+		},
+		{
+			"user": "PJ",
+			"score": 123456
+		},
+		{
+			"user": "Daan",
+			"score": 123456
+		},
+		{
+			"user": "Kristiaan",
+			"score": 123456
+		},
+		{
+			"user": "Marijn",
+			"score": 123456,
+			"currentUser": true
+		},
+		{
+			"user": "Thomas V W",
+			"score": 12345
+		},
+		{
+			"user": "Thomas V D",
+			"score": 1234
+		},
+		{
+			"user": "Jeroen",
+			"score": 123
+		},
+		{
+			"user": "Rob",
+			"score": 12
+		},
+		{
+			"user": "Jerre",
+			"score": 0
+		}
+	]
+}
