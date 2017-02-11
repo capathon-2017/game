@@ -6,7 +6,7 @@ var Highscore = function(game) {
 	this.highscore = this.create(this.game.width - 400, 300, 'highscore');
 	this.highscore.anchor.setTo(0.5, 0.5); 
 
-	this.highscores = this.game.cache._json.highscores.data.highscores;
+	this.highscores = this.game.cache._cache.json.highscores.data.highscores;
 
 	this.y = this.game.height;
 	this.x = 0;
@@ -47,6 +47,5 @@ Highscore.prototype.makeTextNormal = function (item) {
    item.font = "Arial";
 };
 Highscore.prototype.end = function () {
-	debugger;
 }
 module.exports = Highscore;

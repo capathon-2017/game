@@ -9,6 +9,7 @@ var Scoreboard = function(game, mainHandler) {
   this.game = game;
   this.mainHandler = mainHandler;
 
+  this.questions = this.game.cache._cache.json.questions.data;
   this.scoreboard = this.create(this.game.width / 2, 200, 'scoreboard');
   this.scoreboard.anchor.setTo(0.5, 0.5);
 
@@ -20,9 +21,6 @@ Scoreboard.prototype = Object.create(Phaser.Group.prototype);
 Scoreboard.prototype.constructor = Scoreboard;
 
 Scoreboard.prototype.show = function(score) {
-
-
-    this.questions = this.game.cache.json.questions.data;
 
     this.style = { font: "20px Arial", fill: "#000", wordWrap: true, wordWrapWidth: this.scoreboard.width, align: "center"};
 

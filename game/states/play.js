@@ -125,7 +125,7 @@ Play.prototype = {
         this.bird.kill();
         this.pipes.callAll('stop');
         this.pipeGenerator.timer.stop();
-        this.ground.stopScroll();
+        // this.ground.stopScroll();
     }
 
   },
