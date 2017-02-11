@@ -180,7 +180,7 @@ Play.prototype = {
   resetGame: function () {
     this.create();
     this.startGame();
-    this.pipes.destroy();
+    //this.pipes.destroy();
   },
   updateSpeed: function() {
     this.speed -= 10;

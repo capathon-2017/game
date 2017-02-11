@@ -17,6 +17,7 @@ Highscore.prototype.constructor = Highscore;
 
 Highscore.prototype.show = function(context) {
 	context.highscore.visible = true;
+	this.context = context;
 	this.topMargin = context.highscore.height - 70;
     this.leftMargin = 220;
     this.scores = [];
@@ -47,5 +48,6 @@ Highscore.prototype.makeTextNormal = function (item) {
    item.font = "Arial";
 };
 Highscore.prototype.end = function () {
+	this.context.resetGame();
 }
 module.exports = Highscore;
