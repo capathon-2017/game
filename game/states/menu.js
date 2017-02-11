@@ -47,6 +47,9 @@ Menu.prototype = {
     //  create an oscillating animation tween for the group
     this.game.add.tween(this.titleGroup).to({y:115}, 350, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
 
+    // game speed
+    this.game.speed = -200;
+
     // add our start button with a callback
     this.startButton = this.game.add.button(this.game.width/2, 300, 'startButton', this.startClick, this);
     this.startButton.anchor.setTo(0.5,0.5);

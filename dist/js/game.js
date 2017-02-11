@@ -295,7 +295,7 @@ Scoreboard.prototype.answerClicked = function () {
                 this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Yes, thats correct", this.style);
                 result = true;
             }
-            else { 
+            else {
                 this.firstLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 2.1) - this.context.topMargin, "Sorry thats the wrong answer", this.style);
                 this.secondLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.9) - this.context.topMargin, "The right answer was:", this.style);
                 this.thirdLine = this.context.game.add.text(this.context.leftMargin, (this.context.game.height / 1.7) - this.context.topMargin, this.question.options[this.question.correct], this.style);
@@ -312,7 +312,8 @@ Scoreboard.prototype.answerClicked = function () {
     }
     else {
         this.continueButton = this.context.game.add.button(leftMargin, this.context.game.height - buttonTopMargin, 'endButton', this.context.exitGame, this);
-    } 
+        this.context.game.speed = -200;
+    }
 
 };
 Scoreboard.prototype.makeTextBold = function (item) {
@@ -455,6 +456,9 @@ Menu.prototype = {
     //  create an oscillating animation tween for the group
     this.game.add.tween(this.titleGroup).to({y:115}, 350, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
 
+    // game speed
+    this.game.speed = -200;
+
     // add our start button with a callback
     this.startButton = this.game.add.button(this.game.width/2, 300, 'startButton', this.startClick, this);
     this.startButton.anchor.setTo(0.5,0.5);
@@ -535,8 +539,7 @@ Play.prototype = {
     this.previousCenter = 0;
     this.changeY = 0;
     this.difficultyLevel = 0;
-    this.speedUpdater = null;
-    this.speed = -200;
+    this.game.speedUpdater = null;
 
   },
 
@@ -563,11 +566,11 @@ Play.prototype = {
         this.bird.body.allowGravity = true;
         this.bird.alive = true;
         // add a timer : fluid: 0.20 * second
-        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.speed), this.generatePipes, this);
+        this.pipeGenerator = this.game.time.events.loop((Phaser.Timer.SECOND * 20) / Math.abs(this.game.speed), this.generatePipes, this);
         this.pipeGenerator.timer.start();
 
-        this.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
-        this.speedUpdater.timer.start();
+        this.game.speedUpdater = this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.updateSpeed, this);
+        this.game.speedUpdater.timer.start();
 
         this.instructionGroup.destroy();
     }
@@ -615,10 +618,10 @@ Play.prototype = {
     var newPipeY = this.previousCenter + this.changeY;
 
     if(newPipeY >= 100) {
-        newPipeY = 100; // bound to the max 
+        newPipeY = 100; // bound to the max
         trend = -5; //reverse the trend
     } else if(newPipeY <= -120){
-        newPipeY = -120; // bound to the max 
+        newPipeY = -120; // bound to the max
         trend = 5; //reverse the trend
     }
 
@@ -626,9 +629,9 @@ Play.prototype = {
     var pipeGroup = this.pipes.getFirstExists(false);
     //this.pipes.foreach()
     if(!pipeGroup) {
-        pipeGroup = new PipeGroup(this.game, this.pipes, this.speed);
+        pipeGroup = new PipeGroup(this.game, this.pipes, this.game.speed);
     }
-    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.speed);    
+    pipeGroup.reset(this.game.width, newPipeY, this.difficultyLevel, this.game.speed);
 
 
     if(this.pipes.length > 100){
@@ -654,10 +657,10 @@ Play.prototype = {
     //this.pipes.destroy();
   },
   updateSpeed: function() {
-    this.speed -= 10;
-    console.log('speed: ' + this.speed);
-    this.pipes.callAll('updateSpeed', null, this.speed);
-    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.speed);
+    this.game.speed -= 10;
+    console.log('speed: ' + this.game.speed);
+    this.pipes.callAll('updateSpeed', null, this.game.speed);
+    this.pipeGenerator.delay = (Phaser.Timer.SECOND * 20) / Math.abs(this.game.speed);
   }
 };
 
