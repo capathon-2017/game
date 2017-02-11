@@ -19,19 +19,20 @@
             "method4{ }",
             "method5()"
         ],
-        "correct": 2
+        "correct": 1
     },
     "question": {
-        "difficulty": "very though",
-        "text": "Which of the following statements will evaluate to true?",
+        "difficulty": "easy",
+        "text": "Which of the following is illegal ?",
         "options": [
-            ""String".replace('g','G') == "String".replace('g','G')",
-            ""String".replace('g','g') == new String("String").replace('g','g')",
-            ""String".replace('g','G') == "StrinG",
-            ""String".replace('g','g') == "String"",
-            "None of these."
+            "char c = 320",
+            "float f = 320",
+            "double d = 320",
+            "byte b = 320",
+            "float f = 22.0f/7.0f",
+            "None of the above is illegal."
         ],
-        "correct": 4
+        "correct": 3
     },
     "question": {
         "difficulty": "though",
@@ -42,18 +43,18 @@
             "exceptional conditions from which recovery is difficult or impossible.",
             "exceptional situations internal to an application that the application can anticipate but cannot recover from."
         ],
-        "correct": 1
+        "correct": 0
     },
     "question": {
         "difficulty": "very easy",
-        "text": "What is meant by "encapsulation" ?",
+        "text": "What is meant by encapsulation ?",
         "options": [
             "There is no way to access member variable.",
             "There are no member variables.",
             "Member fields are declared private and public accessor/mutator methods are provided to access and change their values if needed.",
             "Data fields are declared public and accessor methods are provided to access and change their values."
           ],
-          "correct": 3
+          "correct": 2
     },
     "question": {
         "difficulty": "very easy",
@@ -65,6 +66,6 @@
             "Every array has an implicit method named 'length' which tells you the number of elements in the array.",
             "Element indexing starts at 0."
         ],
-        "correct": 5
+        "correct": 4
     }
 }
