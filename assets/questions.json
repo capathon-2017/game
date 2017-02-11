@@ -7,6 +7,64 @@
             "Nothing is an Object",
             "Everything and Nothing is an Object"
         ],
-        "correct": 0
+        "correct": 1
+    },
+    "question": {
+        "difficulty": "very easy",
+        "text": "Which of the following code fragments are valid method declarations?",
+        "options": [
+            "void method1{ }",
+            "void method2(){ }",
+            "void method3(void){ }",
+            "method4{ }",
+            "method5()"
+        ],
+        "correct": 2
+    },
+    "question": {
+        "difficulty": "very though",
+        "text": "Which of the following statements will evaluate to true?",
+        "options": [
+            ""String".replace('g','G') == "String".replace('g','G')",
+            ""String".replace('g','g') == new String("String").replace('g','g')",
+            ""String".replace('g','G') == "StrinG",
+            ""String".replace('g','g') == "String"",
+            "None of these."
+        ],
+        "correct": 4
+    },
+    "question": {
+        "difficulty": "though",
+        "text": "Checked exceptions are meant for...",
+        "options": [
+            "exceptional conditions external to an application that a well written application should anticipate and from which it can recover.",
+            "exceptional conditions external to the program  that a well written program cannot anticipate but should recover from.",
+            "exceptional conditions from which recovery is difficult or impossible.",
+            "exceptional situations internal to an application that the application can anticipate but cannot recover from."
+        ],
+        "correct": 1
+    },
+    "question": {
+        "difficulty": "very easy",
+        "text": "What is meant by "encapsulation" ?",
+        "options": [
+            "There is no way to access member variable.",
+            "There are no member variables.",
+            "Member fields are declared private and public accessor/mutator methods are provided to access and change their values if needed.",
+            "Data fields are declared public and accessor methods are provided to access and change their values."
+          ],
+          "correct": 3
+    },
+    "question": {
+        "difficulty": "very easy",
+        "text": "Which of the following statements about an array are correct?",
+        "options": [
+            "An array can dynamically grow in size.",
+            "Arrays can be created only for primitive types.",
+            "Every array has a built in property named 'size' which tells you the number of elements in the array.",
+            "Every array has an implicit method named 'length' which tells you the number of elements in the array.",
+            "Element indexing starts at 0."
+        ],
+        "correct": 5
     }
 }
